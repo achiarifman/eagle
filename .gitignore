@@ -1,0 +1,9 @@
+target/
+*.iml
+.idea
+bin/
+Selenium/selenium-blizzard/test-output/*.*
+Android-Mobile-Tests/.classpath
+*.html
+*.png
+.metadata/*.*

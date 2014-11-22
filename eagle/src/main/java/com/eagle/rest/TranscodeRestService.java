@@ -1,8 +1,10 @@
 package com.eagle.rest;
 
-import com.eagle.entity.Record;
-import com.eagle.mgmt.TranscodeManagerService;
+import com.eagle.entity.EagleRecordEntity;
+import com.eagle.service.TranscodeManagerService;
 import com.sun.jersey.api.core.InjectParam;
+import entity.BaseJobEntity;
+import test.ScalaTest;
 
 import javax.ws.rs.*;
 
@@ -19,15 +21,15 @@ public class TranscodeRestService extends RestApplication{
 
     @POST
     @Path("channel")
-    public String recordChannel(Record record){
+    public EagleRecordEntity recordChannel(EagleRecordEntity eagleRecordEntity){
 
-            transcodeManagerService.addJob(record);
-            return "{status : \"started\"}";
+       return transcodeManagerService.initialNewRecordJob(eagleRecordEntity);
     }
 
     @GET
     @Path("status")
     public String getTranscoderStatus(){
+
 
         if(transcodeManagerService.isFree()){
             return "{status : \"idle\"}";
@@ -43,6 +45,13 @@ public class TranscodeRestService extends RestApplication{
         transcodeManagerService.cancelCurrentJob();
         return "{status : \"canceled\"}";
 
+    }
+
+    @POST
+    @Path("test")
+    public String test(BaseJobEntity baseJobEntity){
+        System.out.println(baseJobEntity.name());
+        return baseJobEntity.name();
     }
 
 
