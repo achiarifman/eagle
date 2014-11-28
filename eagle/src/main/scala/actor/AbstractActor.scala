@@ -2,7 +2,7 @@ package actor
 
 import akka.actor.{ActorLogging, ActorRef, Actor}
 import com.eagle.entity.EagleRecordEntity
-import entity.FailedEntity
+import com.eagle.dao.entity.FailedEntity
 
 import scala.collection.mutable.Stack
 

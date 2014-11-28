@@ -6,7 +6,7 @@ import java.nio.file.{Files, Path}
 import akka.actor.{ActorRef}
 import com.eagle.commons.FileUploadVisitor
 import com.eagle.entity.EagleRecordEntity
-import entity.{FailedEntity}
+import com.eagle.dao.entity.{FailedEntity}
 import org.apache.commons.net.ftp.{FTP, FTPClient}
 import util.EagleSpringProperties
 

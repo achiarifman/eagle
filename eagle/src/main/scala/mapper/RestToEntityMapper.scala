@@ -1,7 +1,7 @@
 package mapper
 
 import com.eagle.entity.EagleRecordEntity
-import entity.BaseJobEntity
+import com.eagle.dao.entity.BaseJobEntity
 
 /**
  * Created by Achia.Rifman on 13/09/2014.

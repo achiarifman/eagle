@@ -1,4 +1,4 @@
-package entity
+package com.eagle.dao.entity
 
 /**
  * Created by Achia.Rifman on 13/09/2014.

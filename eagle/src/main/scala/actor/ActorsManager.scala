@@ -3,7 +3,7 @@ package actor
 import actor.ads.CaptureImagesActor
 import akka.actor.{ActorRef, Actor, ActorLogging, Props}
 import com.eagle.entity.EagleRecordEntity
-import entity.{FailedEntity}
+import com.eagle.dao.entity.{FailedEntity}
 import util.EagleSpringProperties
 import scala.collection.mutable.Stack
 /**
@@ -36,6 +36,7 @@ class ActorsManager extends Actor with ActorLogging{
 
   def initJob(initRecordJob : EagleRecordEntity){
 
+    //we should save the list of actors we will need in array, so each on call back we can check if we already run the actor
     log.info("Initializing a new Job")
     val actors = new Stack[ActorRef]
     actors.push(context.self)

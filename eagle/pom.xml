@@ -20,6 +20,14 @@
             <name>Scala-tools Maven2 Repository</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
+
+        <repository>
+            <id>net.fwbrasil</id>
+            <name>Maven2 Repository</name>
+            <url>http://repo1.maven.org/maven2/net/fwbrasil/</url>
+        </repository>
+
+
     </repositories>
 
     <pluginRepositories>
@@ -141,12 +149,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>net.fwbrasil</groupId>
-            <artifactId>activate-core_2.10</artifactId>
-            <version>1.6.2</version>
-        </dependency>
-
 
         <!-- SCALA DEPENDENCIES -->
 
@@ -192,11 +194,11 @@
         <version>2.11.2</version>
     </dependency>
 
-        <dependency>
+       <!-- <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>casbah-core_2.11</artifactId>
             <version>2.7.3</version>
-        </dependency>
+        </dependency>-->
 
 
         <dependency>
@@ -204,6 +206,20 @@
             <artifactId>akka-actor_2.11</artifactId>
             <version>2.3.5</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.fwbrasil</groupId>
+            <artifactId>activate-core_2.11</artifactId>
+            <version>1.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.fwbrasil</groupId>
+            <artifactId>activate-mongo_2.11</artifactId>
+            <version>1.7</version>
+        </dependency>
+
+
 
         <!-- ================== -->
 

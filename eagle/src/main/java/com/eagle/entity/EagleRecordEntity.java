@@ -2,7 +2,7 @@ package com.eagle.entity;
 
 import com.eagle.consts.PHASES;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import entity.FailedEntity;
+import com.eagle.dao.entity.FailedEntity;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Transient;

@@ -1,6 +1,7 @@
 package actor.ads
 
 import actor.AbstractActor
+import actor.message.CaptureImageMessage
 import ffmpeg.FFmpegImageCapture
 import org.bson.types.ObjectId
 
@@ -14,14 +15,21 @@ class CaptureImagesActor extends AbstractActor{
   val segmentDuration = 20
 
   def receive = {
-    case ("start") => {
-      captureImages()
+    case message : CaptureImageMessage => {
+
+      captureImages(message)
     }
 
   }
 
-  def captureImages() = {
+  def getCaptureImageDetails() = {
 
+  }
+
+  def captureImages(message : CaptureImageMessage) = {
+
+    // eache segment of pics should be in diff sub folder
+    // we should save the array of the folders in db
     log.debug("Going to capture image")
     val startTime = "00:00:05"
     val sourceFilePath = "C:\\Users\\achia.rifman\\Videos\\Test\\sviaznoi_iz_otpuska1.mp4"
