@@ -12,11 +12,11 @@ import scala.reflect.io.Path
 /**
  * Created by Achia.Rifman on 22/11/2014.
  */
-class FFmpegImageCapture (val sourceFilePath : String, val startFrom : String, val time : String, val jobId : String,
+class FFmpegImageCapture (val sourceFilePath : String, val startFrom : String, val time : String,
                           outPutFolder : String, outPutFolderName : String) extends BaseFFmpeg(outPutFolder,outPutFolderName) {
 
   val CAPTURE_INTERVAL = "1"
-  val IMAGE_OUT = "out%d.png"
+  val IMAGE_OUT = "%d.png"
   val track : Pattern = Pattern.compile("^\\bframe\\b.*")
   val error: Pattern = Pattern.compile(".*\\bError\\b.*")
   var isStarted = false
@@ -42,6 +42,7 @@ class FFmpegImageCapture (val sourceFilePath : String, val startFrom : String, v
       }
     )
     val command = FFMPEG + stringBuilder.toString()
+    LOGGER.info("Executing -> " + command)
     command lineStream_!(pLogger)
     if (isStarted && !isFailed){
       LOGGER.info("Could not find more lines")
@@ -63,7 +64,7 @@ class FFmpegImageCapture (val sourceFilePath : String, val startFrom : String, v
     appendPair(FFMPEG_COMMAND.TIME_LIMIT, time)
     appendPair(FFMPEG_COMMAND.FORMAT, FFMPEG_COMMAND.IMAGE2)
     appendPair(FFMPEG_COMMAND.VF, FFMPEG_COMMAND.IMAGE_FPS + CAPTURE_INTERVAL)
-    val outPutFolderPath = createOutputFolder(outPutFolder + File.separator + jobId + "_pics")
-    appendParam(FFmpegConst.SPACE + outPutFolderPath + File.separator + jobId + FFmpegConst.UNDERSCORE + IMAGE_OUT)
+    //val outPutFolderPath = createOutputFolder(outPutFolder)
+    appendParam(FFmpegConst.SPACE + outPutFolder + File.separator + IMAGE_OUT)
   }
 }

@@ -1,0 +1,12 @@
+http://46.249.213.87/iPhone/broadcast/tracetvsports-tablet.3gp.m3u8
+http://8.21.48.19:7777/DubaiSport2_HD.m3u8
+http://8.21.48.19:7777/MBC3_HD.m3u8
+
+http://8.21.48.19:7777/Fox_HD.m3u8
+
+http://c01cp.vds-is.castup.net/990310142-123.flv/smil:990310142-123.smil/playlist.m3u8
+http://c02cp.vds-is.castup.net/990310121-123.flv/smil:990310121-123.smil/playlist.m3u8
+http://ynet_hds_live-f.akamaihd.net/i/ynet_1@153521/master.m3u8
+http://sw.gostreaming.tv:1935/live/smil:myStream.smil/playlist.m3u8
+
+http://38.99.146.36:7777/MBCAction_HD/MBCAction_High.m3u8

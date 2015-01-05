@@ -1,5 +1,7 @@
 package actor
 
+import java.io.File
+
 import akka.actor.{ActorLogging, ActorRef, Actor}
 import com.eagle.entity.EagleRecordEntity
 import com.eagle.dao.entity.FailedEntity
@@ -17,5 +19,9 @@ abstract class AbstractActor extends Actor with ActorLogging{
     val act = it.pop()
     act !(eagleRecordJob, it)
   }
+
+  /*def createOutputFolder(folderName: String) {
+    new File(folderName).mkdir
+  }*/
 
 }

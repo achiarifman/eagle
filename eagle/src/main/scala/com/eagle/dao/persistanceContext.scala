@@ -1,6 +1,5 @@
 package com.eagle.dao
 
-import com.eagle.dao.entity.EagleJob
 import net.fwbrasil.activate.ActivateContext
 import net.fwbrasil.activate.serialization.{jsonSerializer, Serializer}
 import net.fwbrasil.activate.storage.mongo.MongoStorage
@@ -17,6 +16,6 @@ object persistanceContext extends ActivateContext{
     //override val authentication = Option("local", "vidmind12")
   }
 
-  override protected def customSerializers  = List(
-    serialize[EagleJob](_.eagleRec) using jsonSerializer)
+/*  override protected def customSerializers  = List(
+    serialize[EagleJob](_.eagleRec) using jsonSerializer)*/
 }

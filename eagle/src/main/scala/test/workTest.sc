@@ -1,25 +1,18 @@
-import com.eagle.dao.entity.EagleJob
-import net.fwbrasil.activate.ActivateContext
-import net.fwbrasil.activate.storage.mongo.MongoStorage
-/**
- * Created by Achia.Rifman on 13/09/2014.
- */
-object persistanceContext extends ActivateContext {
+import scala.concurrent.duration._
 
-  val storage = new MongoStorage {
-    val host = "localhost"
-    override val port = 27017
-    val db = "activate"
-    //override val authentication = Option("local", "vidmind12")
+/*val duration = Duration(20, SECONDS)
+println(convert(duration.toHours) + ":" + convert(duration.toMinutes) + ":" + duration.toSeconds)
+
+def convert(long: Long) = {
+  if (long.toString.size < 2){
+    0 + long.toString
+  }else{
+    long.toString
   }
-}
+}*/
 
-import persistanceContext._
-
-val t = transactional {
-  val job = new EagleJob("test", "test")
-  job
-  //LOGGER.info("Going to persist new job " + job.id)
-}
-println(t.id)
-
+val duration = 30
+val numOfAds = 3
+val segmentLength : Int = duration / numOfAds
+val segments = List.range(0,duration,segmentLength)
+segments

@@ -1,9 +1,16 @@
 package actor
 
+import java.io.File
+import java.nio.file.Paths
+
+import actor.message.{PostRecordMessage, RecordFailedMessage, PreRecordMessage}
 import akka.actor.ActorRef
+import com.eagle.consts.FFmpegConst
 import com.eagle.entity.EagleRecordEntity
 import com.eagle.dao.entity.FailedEntity
+import config.{PropsConst, EagleProps}
 import ffmpeg.FFmpegRecorder
+import org.bson.types.ObjectId
 
 import scala.collection.mutable.Stack
 
@@ -12,39 +19,45 @@ import scala.collection.mutable.Stack
  */
 class RecordActor extends AbstractActor{
 
+  val OUTPUT_FOLDER: String = EagleProps.config.getString(PropsConst.RECORD_OUTPUT)
+
 
   def receive = {
 
-    case (eagleRecordJob: EagleRecordEntity, it: Stack[ActorRef]) => {
-      val result = startFFmpegRecordProcess(eagleRecordJob)
-      if (!result) {handleFailedRecording(eagleRecordJob, it)}
-      else {handleSuccessRecording(eagleRecordJob, it)}
-    }
-    case (eagleRecordJob: EagleRecordEntity, it: Stack[ActorRef], failed: FailedEntity) => {
-      handleFailedEntity(eagleRecordJob, it, failed)
+    case (message: PreRecordMessage) => {
+      startFFmpegRecordProcess(message)
     }
   }
 
-  def startFFmpegRecordProcess(eagleRecordJob: EagleRecordEntity) :Boolean = {
+  def startFFmpegRecordProcess(message: PreRecordMessage) = {
 
     log.info("Start recording process")
     val ffmpegRecorder = new FFmpegRecorder
-    ffmpegRecorder.init(eagleRecordJob)
-    ffmpegRecorder.startRecording
+    val outPutFolder = OUTPUT_FOLDER + File.separator + message.id
+    createOutputFolder(outPutFolder)
+    val outPutFilePath = outPutFolder + File.separator +  message.id.toString + FFmpegConst.UNDERSCORE + message.channelName
+    val filePath = ffmpegRecorder.init(message.id.toString, message.url, message.duration, outPutFilePath)
+    val result = ffmpegRecorder.startRecording
+    if (!result) {
+      handleFailedRecording(message.id)
+    }
+    else {
+      handleSuccessRecording(message.id,filePath)
+    }
   }
 
-  def handleSuccessRecording(eagleRecordJob: EagleRecordEntity, it: Stack[ActorRef]) {
+  def createOutputFolder(folderName: String) {
+    new File(folderName).mkdir
+  }
+
+  def handleSuccessRecording(id : String, outPutFile : String) {
     log.info("Handling success recording")
-    val act = it.pop()
-    act !(eagleRecordJob, it)
+    sender() ! new PostRecordMessage(id,outPutFile)
   }
 
-  def handleFailedRecording(eagleRecordJob: EagleRecordEntity, it: Stack[ActorRef]) {
+  def handleFailedRecording(id : String) {
     log.error("Handling failed recording")
-    val failed = new FailedEntity("The record phase as failed")
-    eagleRecordJob.setFailed(true, failed)
-    val act = it.pop()
-    act !(eagleRecordJob, it, failed)
+    sender() ! new RecordFailedMessage(id,"record failed")
   }
 
 

@@ -10,26 +10,28 @@ trait BaseEagleEntity extends Entity{
 
 
 }
-@Alias("jobs")
+/*@Alias("jobs")
 case class EagleJob(var eagleRec : EagleRecordJob) extends BaseEagleEntity {
 
-}
+}*/
 /*
 case class EagleJob(var subJobs : List[String], var enc : EncodeTest) extends BaseEagleEntity{
-
-
 }
 */
-
 abstract class BaseJob{
 
 /*  var finished : Boolean
   var actorList : List[ActorJob]*/
 }
-
-class EagleRecordJob(var recordUrl : String, var recordDuration : Int, var channelName : String) extends Serializable {
-   var finished: Boolean = false
-   var actorList: List[ActorJob] = _
+@Alias("jobs")
+class EagleRecordJob(val id : String,var recordUrl : String, var recordDuration : Int, var channelName : String,
+                     var waitingActorList: List[String], val adsPath : List[String])
+  extends EntityWithCustomID[String] {
+  var finished: Boolean = false
+  var recordOutPutPath : String = null
+  var finishedActorsList = List[String]()
+  var uploadFolder : String = null
+  var tuple = ("key","value")
 }
 
 class EagleAdJob(var sourceFilePath : String, var ImageOutPutFolder : String) extends BaseJob{

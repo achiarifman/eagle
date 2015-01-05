@@ -1,6 +1,5 @@
 package test
 
-import com.eagle.dao.entity.EagleJob
 import service.ActorsService
 import com.eagle.dao.persistanceContext._
 /**

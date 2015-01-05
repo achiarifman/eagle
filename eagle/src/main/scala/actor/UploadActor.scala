@@ -3,11 +3,14 @@ package actor
 import java.io.{File, IOException}
 import java.nio.file.{Files, Path}
 
+import actor.message.{PostUploadMessage, PreUploadMessage}
 import akka.actor.{ActorRef}
 import com.eagle.commons.FileUploadVisitor
 import com.eagle.entity.EagleRecordEntity
 import com.eagle.dao.entity.{FailedEntity}
+import config.{PropsConst, EagleProps}
 import org.apache.commons.net.ftp.{FTP, FTPClient}
+import org.bson.types.ObjectId
 import util.EagleSpringProperties
 
 import scala.collection.mutable.Stack
@@ -18,21 +21,22 @@ import scala.collection.mutable.Stack
 class UploadActor() extends AbstractActor{
 
   val ftpClient: FTPClient = new FTPClient
+  val ftpHost = EagleProps.config.getString(PropsConst.FTP_HOST)
+  val ftpDirectory = EagleProps.config.getString(PropsConst.FTP_FOLDER)
+  val ftpUsername = EagleProps.config.getString(PropsConst.FTP_USERNAME)
+  val ftpPassword = EagleProps.config.getString(PropsConst.FTP_PASSWORD)
 
 
   def receive = {
 
-    case (uploadRecordJob: EagleRecordEntity, it : Stack[ActorRef]) => {
-      val result = startUploadingProcess(uploadRecordJob)
-      if(!result) handleFailedUploading(uploadRecordJob, it)
-      else handleSuccessUploading(uploadRecordJob,it)
-    }
-    case (eagleRecordJob: EagleRecordEntity, it: Stack[ActorRef], failed: FailedEntity) => {
-      handleFailedEntity(eagleRecordJob, it, failed)
+    case (preUploadMessage: PreUploadMessage) => {
+      val result = startUploadingProcess(preUploadMessage)
+      if(!result) handleFailedUploading(preUploadMessage.id)
+      else handleSuccessUploading(preUploadMessage.id)
     }
   }
 
-  def startUploadingProcess(uploadRecordJob: EagleRecordEntity) : Boolean = {
+  def startUploadingProcess(preUploadMessage: PreUploadMessage) : Boolean = {
     try {
       initialFtpClient()
     }
@@ -41,10 +45,10 @@ class UploadActor() extends AbstractActor{
         return false
       }
     }
-    val uploadFolder: Path = uploadRecordJob.getOutPutFolderPath
+    val uploadFolder: Path = preUploadMessage.uploadPath
     val fileUploadVisitor: FileUploadVisitor = new FileUploadVisitor(ftpClient)
     fileUploadVisitor.setMainFolder(uploadFolder.getFileName.toString)
-    ftpClient.makeDirectory(EagleSpringProperties.hostDirectory + File.separator + uploadFolder.getFileName.toString)
+    ftpClient.makeDirectory(ftpDirectory + File.separator + uploadFolder.getFileName.toString)
     Files.walkFileTree(uploadFolder, fileUploadVisitor)
     disconnect
     log.info("Start uploading process")
@@ -52,7 +56,7 @@ class UploadActor() extends AbstractActor{
   }
 
   def initialFtpClient(){
-    ftpClient.connect(EagleSpringProperties.host, 21)
+    ftpClient.connect(ftpHost, 21)
     val login: Boolean = ftpClient.login(EagleSpringProperties.userName, EagleSpringProperties.password)
     if (!login) {
       throw new IOException
@@ -75,17 +79,13 @@ class UploadActor() extends AbstractActor{
     }
   }
 
-  def handleSuccessUploading(uploadRecordJob: EagleRecordEntity, it : Stack[ActorRef]){
+  def handleSuccessUploading(id : String){
     log.info("Handling success uploading")
-    val act = it.pop()
-    act ! (uploadRecordJob,it)
+    sender() ! PostUploadMessage(id,true)
   }
 
-  def handleFailedUploading(eagleRecordJob: EagleRecordEntity, it: Stack[ActorRef]) {
+  def handleFailedUploading(id : String) {
     log.error("Handling failed uploading")
-    val failed = new FailedEntity("The upload phase as failed")
-    eagleRecordJob.setFailed(true, failed)
-    val act = it.pop()
-    act !(eagleRecordJob, it, failed)
+    sender() ! PostUploadMessage(id,false)
   }
 }

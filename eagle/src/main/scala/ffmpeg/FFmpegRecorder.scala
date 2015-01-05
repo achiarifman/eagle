@@ -7,6 +7,7 @@ import java.util.Scanner
 import java.util.regex.{Matcher, Pattern}
 import com.eagle.consts.{FFmpegConst, VIDEO_CODEC, FFMPEG_CMD}
 import com.eagle.entity.EagleRecordEntity
+import org.bson.types.ObjectId
 import org.slf4j.{LoggerFactory, Logger}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -29,9 +30,7 @@ class FFmpegRecorder {
   val track: Pattern = Pattern.compile("^\\bframe\\b.*")
   val failedHostName: Pattern = Pattern.compile(".*\\bFailed to resolve hostname\\b.*")
   val LOGGER = LoggerFactory.getLogger(classOf[FFmpegRecorder])
-  var outPutFolderPath : Path = _
   val inputStream = new SyncVar[OutputStream];
-  var outPutFolderName : String = _
 
   def startRecording() : Boolean =  {
 
@@ -41,17 +40,18 @@ class FFmpegRecorder {
       line => {
         var mTrack: Matcher = track.matcher(line)
         if (mTrack.matches) {
-          println("It is a frame line")
+          println("It is a frame line" + line)
           isStarted = true
         }
         mTrack = failedHostName.matcher(line)
         if (mTrack.matches) {
-          println("****Could not reach the url*****")
+          println("****Could not reach the url*****" + line)
           isFailed = true
         }
       }
     )
     val command = FFMPEG + stringBuilder.toString()
+    LOGGER.info("Executing -> " + command)
     command lineStream_!(pLogger)
     if (isStarted && !isFailed){
       LOGGER.info("Could not find more lines")
@@ -77,22 +77,20 @@ class FFmpegRecorder {
     stringBuilder.append(param)
   }
 
-  def init(eagleRecordEntity : EagleRecordEntity ) : EagleRecordEntity ={
+  def init(jobId : String, url : String, duration : Int, outPutFilePath : String) : String ={
 
-    appendPair(FFMPEG_CMD.INPUT, eagleRecordEntity.getUrl)
-    appendPair(FFMPEG_CMD.TIME_LIMIT, String.valueOf(eagleRecordEntity.getDuration))
+    val outPutFile = outPutFilePath + ".mp4"
+    appendPair(FFMPEG_CMD.INPUT, url)
+    appendPair(FFMPEG_CMD.TIME_LIMIT, String.valueOf(duration))
     appendPair(FFMPEG_CMD.VIDEO_CODEC, VIDEO_CODEC.H_264)
-    outPutFolderName = eagleRecordEntity.getId.toString
-    createOutputFolder(eagleRecordEntity.getOutputFolder + File.separator + eagleRecordEntity.getId.toString)
-    appendParam(FFmpegConst.SPACE + outPutFolderPath + File.separator + eagleRecordEntity.getId.toString + FFmpegConst.UNDERSCORE + eagleRecordEntity.getChannelName + ".mp4")
-    eagleRecordEntity.setOutPutFolderPath(outPutFolderPath)
-    eagleRecordEntity
+    appendParam(FFmpegConst.SPACE + outPutFile)
+    outPutFile
   }
 
-  def createOutputFolder(folderName: String) {
+  /*def createOutputFolder(folderName: String) {
     new File(folderName).mkdir
     outPutFolderPath = Paths.get(folderName)
-  }
+  }*/
 
 
 

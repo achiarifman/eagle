@@ -57,8 +57,6 @@ public class TranscodeManagerService {
     @Autowired
     UploadDao uploadDao;
 
-    @Autowired
-    ActorsService actorsService;
 
     @PostConstruct
     protected void init() {
@@ -104,7 +102,7 @@ public class TranscodeManagerService {
     public EagleRecordEntity initialNewRecordJob(EagleRecordEntity eagleRecordEntity){
 
         recordsDao.save(eagleRecordEntity);
-        actorsService.initialJob(eagleRecordEntity);
+        //actorsService.initialJob(eagleRecordEntity);
         return eagleRecordEntity;
     }
 
