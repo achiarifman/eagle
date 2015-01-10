@@ -1,10 +1,11 @@
 package actor
 
-import actor.ads.{ImageScannerActor, CaptureImagesActor}
+import actor.ads.{AdsEmbederActor, BeforeEmbedActor, ImageScannerActor, CaptureImagesActor}
 import actor.consts.ActorsTypes
 import actor.image.ImageDiffActor
 import actor.message._
-import akka.actor.{Props, ActorRef}
+import akka.actor.{ActorSystem, Props, ActorRef}
+import com.eagle.dao.JobDao
 import com.eagle.entity.EagleRecordEntity
 
 import scala.collection.mutable.Stack
@@ -18,6 +19,8 @@ class AdActor extends AbstractActor{
   val captureImagesActor = context.actorOf(Props(new CaptureImagesActor),ActorsTypes.CAPTURE_IMAGES_ACTOR)
   val imageDiffActor = context.actorOf(Props(new ImageDiffActor),ActorsTypes.IMAGE_DIFF_ACTOR)
   val imageScannerActor = context.actorOf(Props(new ImageScannerActor), ActorsTypes.IMAGE_SCANNER_ACTOR)
+  val beforeEmbedActor = context.actorOf(Props(new BeforeEmbedActor), ActorsTypes.BEFORE_EMBED_ACTOR)
+  val adsEmbederActor = context.actorOf(Props(new AdsEmbederActor), ActorsTypes.ADS_EMBEDER_ACTOR)
 
   def receive = {
 
@@ -35,7 +38,35 @@ class AdActor extends AbstractActor{
 
     case (postFindImageDiffMessage : PostFindImageDiffMessage) => {
       if(postFindImageDiffMessage.success){
-        imageScannerActor ! PreScanImagesMessage(postFindImageDiffMessage.id,postFindImageDiffMessage.segmentsResultList)
+        imageScannerActor ! PreScanImagesMessage(postFindImageDiffMessage.id,postFindImageDiffMessage.segmentsResultList,postFindImageDiffMessage.segments)
+      }else{
+        // send fail to ActorManager
+      }
+    }
+
+    case(postScanImagesMessage : PostScanImagesMessage) => {
+      if(postScanImagesMessage.success){
+        val job = JobDao.getJobById(postScanImagesMessage.id)
+        beforeEmbedActor ! PreBeforeEmbedMessage(postScanImagesMessage.id,postScanImagesMessage.segmentsCandidates,job.recordOutPutPath, job.adsPath,
+          job.segmentDuration)
+      }else{
+        // send fail to ActorManager
+      }
+    }
+
+    case(postBeforeEmbedMessage : PostBeforeEmbedMessage) => {
+      if(postBeforeEmbedMessage.success){
+        val job = JobDao.getJobById(postBeforeEmbedMessage.id)
+        adsEmbederActor ! PreAdEmbederMessage(postBeforeEmbedMessage.id,postBeforeEmbedMessage.matchedAdList, job.recordOutPutPath)
+      }else{
+        // send fail to ActorManager
+      }
+    }
+
+    case(postAdEmbederMessage : PostAdEmbederMessage) => {
+      if(postAdEmbederMessage.success){
+        val actorParent = context.parent
+        actorParent ! postAdEmbederMessage
       }else{
         // send fail to ActorManager
       }

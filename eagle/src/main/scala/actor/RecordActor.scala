@@ -6,10 +6,11 @@ import java.nio.file.Paths
 import actor.message.{PostRecordMessage, RecordFailedMessage, PreRecordMessage}
 import akka.actor.ActorRef
 import com.eagle.consts.FFmpegConst
+import com.eagle.dao.JobDao
 import com.eagle.entity.EagleRecordEntity
 import com.eagle.dao.entity.FailedEntity
 import config.{PropsConst, EagleProps}
-import ffmpeg.FFmpegRecorder
+import ffmpeg.{FFProbeInfo, FFmpegRecorder}
 import org.bson.types.ObjectId
 
 import scala.collection.mutable.Stack
@@ -52,6 +53,20 @@ class RecordActor extends AbstractActor{
 
   def handleSuccessRecording(id : String, outPutFile : String) {
     log.info("Handling success recording")
+    val mediaInfo = FFProbeInfo.getFileInfo(outPutFile)
+    if(mediaInfo.isEmpty){
+
+    }else{
+      val info = mediaInfo.get
+      if(!info.getStreams.isEmpty){
+        val width = info.getStreams.get(0).getWidth
+        val height = info.getStreams.get(0).getWidth
+        if(height != null && width != null){
+          JobDao
+        }
+      }
+
+    }
     sender() ! new PostRecordMessage(id,outPutFile)
   }
 

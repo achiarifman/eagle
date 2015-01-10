@@ -12,4 +12,7 @@ object PropsConst {
   val FTP_PASSWORD = "ftp.password"
   val IMG_SPLITTED_FOLDER = "image.splitted.output"
   val IMG_DIFF_FOLDER = "image.diff.output"
+  val EMBED_OUTPUT = "embed.output"
+  val NEEDED_PERCENTAGES = "percentages"
+  val FFMPEG_PATH = "ffmpeg.path"
 }

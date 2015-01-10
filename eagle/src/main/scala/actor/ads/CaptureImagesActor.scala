@@ -4,6 +4,7 @@ import java.io.File
 
 import actor.AbstractActor
 import actor.message.{PostCaptureImageMessage, PreCaptureImageMessage}
+import com.eagle.dao.JobDao
 import config.{PropsConst, EagleProps}
 import ffmpeg.FFmpegImageCapture
 import org.bson.types.ObjectId
@@ -31,6 +32,7 @@ class CaptureImagesActor extends AbstractActor with FileUtils{
 
   def execute(message : PreCaptureImageMessage) = {
     val segmentDuration = splitVideoByTime(message.videoDuration, message.adsList.size)
+    JobDao.saveJobSegmentDuration(message.id,segmentDuration)
     val segmentsList = List.range(0,message.adsList.size)
     val outputFolder = createOutputFolder(splittedFolder + message.id)
     var result = true

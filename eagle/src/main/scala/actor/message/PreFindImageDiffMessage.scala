@@ -12,7 +12,8 @@ case class PreFindImageDiffMessage(override val id : String, val segments : List
 
 }
 
-case class PostFindImageDiffMessage(override val id : String, override val success : Boolean ,val segmentsResultList : Map[Int,List[ImageDiff]])
+case class PostFindImageDiffMessage(override val id : String, override val success : Boolean ,val segmentsResultList : Map[Int,List[ImageDiff]],
+                                    val segments : List[Int])
   extends BaseResultMessage(id, success){
 
 }

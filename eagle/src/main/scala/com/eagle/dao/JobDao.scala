@@ -18,13 +18,14 @@ object JobDao {
     }
   }
 
-  def getJobById(id : String) = {
-    val job = transactional {
-      byId[EagleRecordJob](id)
-    }
-    job.get
-  }
 
+    def getJobById(id: String) = {
+      val job = transactional {
+        byId[EagleRecordJob](id)
+      }
+      job.get
+
+  }
   def updateActorsList(id : String, finishedActors : List[String], waitingActors : List[String]) = {
     transactional{
       val jobOption =  byId[EagleRecordJob](id)
@@ -47,4 +48,26 @@ object JobDao {
       }
     }
   }
+
+  def saveJobSegmentDuration(id : String, segmentDuration : Int) = {
+    transactional{
+      val jobOption = byId[EagleRecordJob](id)
+      transactional(nested) {
+        val job = jobOption.get
+        job.segmentDuration = segmentDuration
+      }
+    }
+  }
+
+  def saveJobSegmentDuration(id : String, width : Int, height : Int) = {
+    transactional{
+      val jobOption = byId[EagleRecordJob](id)
+      transactional(nested) {
+        val job = jobOption.get
+        job.width = width
+        job.height = height
+      }
+    }
+  }
+
 }

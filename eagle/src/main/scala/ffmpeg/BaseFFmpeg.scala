@@ -3,6 +3,8 @@ package ffmpeg
 import java.io.{File, OutputStream}
 import java.nio.file.Paths
 
+import config.{PropsConst, EagleProps}
+
 import scala.concurrent.SyncVar
 
 /**
@@ -10,9 +12,11 @@ import scala.concurrent.SyncVar
  */
 class BaseFFmpeg(val outPutFolder : String, val outPutFolderName : String) {
 
-  val FFMPEG = "ffmpeg"
+  val FFMPEG =  EagleProps.config.getString(PropsConst.FFMPEG_PATH)
   val inputStream = new SyncVar[OutputStream]
   val stringBuilder: StringBuilder = new StringBuilder
+  var isStarted = false
+  var isFailed = false
 
 
   def appendPair(key: String, value: String) = {

@@ -19,8 +19,6 @@ class FFmpegImageCapture (val sourceFilePath : String, val startFrom : String, v
   val IMAGE_OUT = "%d.png"
   val track : Pattern = Pattern.compile("^\\bframe\\b.*")
   val error: Pattern = Pattern.compile(".*\\bError\\b.*")
-  var isStarted = false
-  var isFailed = false
   val LOGGER = LoggerFactory.getLogger(classOf[FFmpegImageCapture])
 
   def captureImages() = {

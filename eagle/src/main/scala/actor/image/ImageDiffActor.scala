@@ -22,7 +22,7 @@ class ImageDiffActor extends AbstractActor with FileUtils{
 
   val SPLITTED_IMG_FOLDER = EagleProps.config.getString(PropsConst.IMG_SPLITTED_FOLDER)
   val DIFF_IMG_FOLDER = EagleProps.config.getString(PropsConst.IMG_DIFF_FOLDER)
-
+  val NEEDED_PERCENTAGE = EagleProps.config.getInt(PropsConst.NEEDED_PERCENTAGES)
   val CORNER_U_L = "U_L"
   val CORNER_U_R = "U_R"
   val CORNER_D_L = "D_L"
@@ -49,29 +49,29 @@ class ImageDiffActor extends AbstractActor with FileUtils{
         val image1 = s + File.separator + a + ".png"
         val next = a + 1
         val image2 = s + File.separator + next + ".png"
-        val result = isImagesEquals(image1,image2,outPutSegmentFolder,a,next)
+        val result = isImagesEquals(segmentNum,image1,image2,outPutSegmentFolder,a,next)
         picResultList += result
       }
       segmentResultList += (segmentNum -> picResultList.sortBy(f => f.id).toList)
     })
-    sender() ! PostFindImageDiffMessage(message.id,true,segmentResultList.toMap)
+    sender() ! PostFindImageDiffMessage(message.id,true,segmentResultList.toMap, message.segments)
   }
 
 
 
-  def isImagesEquals(image1 :String, image2 : String , outputFolder : String , img1Id : Int, img2Id : Int)  =  {
+  def isImagesEquals(segId : Int, image1 :String, image2 : String , outputFolder : String , img1Id : Int, img2Id : Int)  =  {
 
     val diffFile = outputFolder + File.separator + img1Id + "_" + img2Id + ".png"
     val imageMagick = new ImageMagickCompare
     val result = imageMagick.compare(image1,image2,diffFile)
     if(result){
-     isImageDiff(diffFile, img1Id, img2Id)
+     isImageDiff(segId,diffFile, img1Id, img2Id)
     }else{
-      ImageDiff(img1Id,img1Id,img2Id,false,false,false,false,diffFile)
+      ImageDiff(segId,img1Id,img2Id,false,false,false,false,diffFile,0,0)
     }
   }
 
-  def isImageDiff(imagePath : String, img1Id : Int, img2Id : Int) = {
+  def isImageDiff(segId : Int,imagePath : String, img1Id : Int, img2Id : Int) = {
 
     val image = ImageIO.read(new File(imagePath))
     val width = image.getWidth
@@ -83,7 +83,7 @@ class ImageDiffActor extends AbstractActor with FileUtils{
     val rightUpResult = scanImageCorner(CORNER_U_R,image,cornerSize)
     val leftDownResult = scanImageCorner(CORNER_D_L,image,cornerSize)
     val rightDownResult = scanImageCorner(CORNER_D_R,image,cornerSize)
-    ImageDiff(img1Id,img1Id,img2Id,leftUpResult,rightUpResult,leftDownResult,rightDownResult,imagePath)
+    ImageDiff(segId,img1Id,img2Id,leftUpResult,rightUpResult,leftDownResult,rightDownResult,imagePath,cornerSize._1,cornerSize._2)
     //val cornersMap = Map[String,Boolean](CORNER_U_L -> leftUpResult, CORNER_U_R -> rightUpResult, CORNER_D_L -> leftDownResult, CORNER_D_R -> rightDownResult)
     //cornersMap
 
@@ -116,7 +116,7 @@ class ImageDiffActor extends AbstractActor with FileUtils{
         blackPixels += 1
       }
     })
-    val neededPixels = pixels.size * 70 / 100 // find how much is 80% from the whole pixels
+    val neededPixels = pixels.size * NEEDED_PERCENTAGE / 100 // find how much is NEEDED_PERCENTAGE from the whole pixels
     if(blackPixels >= neededPixels){
       true
     }else {

@@ -20,19 +20,11 @@ class ActorsManager extends Actor with ActorLogging{
   val actorsMap = Map[String,List[ActorRef]](ActorsTypes.RECORD_ACTOR ->
     List[ActorRef](context.actorOf(Props(new RecordActor), "recordActor1"),context.actorOf(Props(new RecordActor), "recordActor2")),
     ActorsTypes.UPLOAD_ACTOR -> List[ActorRef](context.actorOf(Props(new UploadActor), "uploadActor")))
-  //val captureImagesActor = context.actorOf(Props(new CaptureImagesActor),ActorsTypes.CAPTURE_IMAGES_ACTOR)
-  val adActor = context.actorOf(Props(new AdActor))
-/*  val imageDiffActor = context.actorOf(Props(new ImageDiffActor),ActorsTypes.IMAGE_DIFF_ACTOR)
-  val imageScannerActor = context.actorOf(Props(new ImageScannerActor), ActorsTypes.IMAGE_SCANNER_ACTOR)*/
-  /*val recordActor = context.actorOf(Props[RecordActor], "recordActor1")
-  val recordActor2 = context.actorOf(Props[RecordActor], "recordActor2")
-  val uploadActor = context.actorOf(Props[UploadActor], "uploadActor")*/
-  //val captureImagesActor = context.actorOf(Props[CaptureImagesActor] , "captureImagesActor")
+  val adActor = context.actorOf(Props(new AdActor),ActorsTypes.AD_ACTOR)
 
   def receive = {
 
     case (init : EagleRecordJob) => {
-      //captureImagesActor ! "start"
       log.info("Got new job, starting to process is")
       initJob(init)
       println("send to record")
@@ -58,6 +50,15 @@ class ActorsManager extends Actor with ActorLogging{
     case (eagleRecordJob: EagleRecordEntity, it: Stack[ActorRef], failed: FailedEntity) => {
       handleFailedJob(eagleRecordJob,failed)
     }
+
+    case(postAdEmbederMessage : PostAdEmbederMessage) => {
+      if(postAdEmbederMessage.success){
+       println("AD embed Finished!!!!!")
+      }else{
+        // send fail to ActorManager
+      }
+    }
+
     case _ => println("NONE")
   }
 

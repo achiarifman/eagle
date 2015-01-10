@@ -32,6 +32,9 @@ class EagleRecordJob(val id : String,var recordUrl : String, var recordDuration 
   var finishedActorsList = List[String]()
   var uploadFolder : String = null
   var tuple = ("key","value")
+  var segmentDuration : Int = 0
+  var width : Int = 0
+  var height : Int = 0
 }
 
 class EagleAdJob(var sourceFilePath : String, var ImageOutPutFolder : String) extends BaseJob{
