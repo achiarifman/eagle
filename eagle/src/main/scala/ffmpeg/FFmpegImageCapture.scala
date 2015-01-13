@@ -51,7 +51,7 @@ class FFmpegImageCapture (val sourceFilePath : String, val startFrom : String, v
       false
     }
     else {
-      LOGGER.error("There was an error to start the recording")
+      LOGGER.error("There was an error to start capturing images")
       false
     }
   }

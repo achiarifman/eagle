@@ -74,12 +74,15 @@ class BeforeEmbedActor  extends AbstractActor{
       val times = getStartEndFromImageList(f._1._1,segmentDuration)
       AdToEmbed(f._2._2,times._1,times._2,f._1._2,f._1._1.head.cornerWidth,f._1._1.head.cornerHeight)
     })
-    val unMatchedSolved : List[AdToEmbed]= handleUnMatchedAds(notMatches,sortedAds).map(f => {
-      val times = getStartEndFromImageList(f._1._1,segmentDuration)
-      AdToEmbed(f._2._2,times._1,times._2,f._1._2,f._1._1.head.cornerWidth,f._1._1.head.cornerHeight)
-    })
-    val matchedList = adImageList ::: unMatchedSolved
-    matchedList
+    if(!notMatches.isEmpty){
+      val unMatchedSolved : List[AdToEmbed]= handleUnMatchedAds(notMatches,sortedAds).map(f => {
+        val times = getStartEndFromImageList(f._1._1,segmentDuration)
+        AdToEmbed(f._2._2,times._1,times._2,f._1._2,f._1._1.head.cornerWidth,f._1._1.head.cornerHeight)
+      })
+      adImageList ::: unMatchedSolved
+    }else{
+      adImageList
+    }
   }
 
   def getAdMediaInfo(adPath : String) = {
@@ -105,7 +108,7 @@ class BeforeEmbedActor  extends AbstractActor{
     val imagesList = unMatched.map(f => f._1)
     val matched = imagesList.map(f => {
       (f,allAds.find(p => p._1 <= f._1.size))
-    }).filter(f => f._2.get != None).map(z => (z._1,z._2.get))
+    }).filter(f => f._2.get != None).map(z => (z._1,z._2.get)) // need to check there is a problem
     matched
   }
 }

@@ -48,8 +48,10 @@ class FFmpegEmbeder(val sourceFilePath : String, val embedVideos : List[AdToEmbe
       }
     )
     val command = FFMPEG + stringBuilder.toString()
-    LOGGER.info("Executing -> " + command)
-    command lineStream_!(pLogger)
+    val commandInBytes = command.getBytes("UTF-8"); // Correct.
+    val stringUsingUTF8 = new String(commandInBytes, "UTF-8"); // Correct.
+    LOGGER.info("Executing -> " + stringUsingUTF8)
+    stringUsingUTF8 lineStream_!(pLogger)
     if (isStarted && !isFailed){
       LOGGER.info("Could not find more lines")
       true
@@ -67,7 +69,7 @@ class FFmpegEmbeder(val sourceFilePath : String, val embedVideos : List[AdToEmbe
   def init() {
 
     appendPair(FFMPEG_COMMAND.INPUT, sourceFilePath)
-    embedVideos.foreach(a => appendPair(FFMPEG_COMMAND.INPUT,a.adPath))
+    embedVideos.foreach(a => appendParam(FFMPEG_COMMAND.INPUT + a.adPath))
     var filterValue : String = "\""
     for(i <-1 to embedVideos.size){
       filterValue = filterValue.concat(buildEmbedFilter(embedVideos(i-1),i))

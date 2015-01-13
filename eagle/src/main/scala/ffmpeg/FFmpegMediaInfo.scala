@@ -55,7 +55,7 @@ class FFmpegMediaInfo(val sourceFilePath : String) extends BaseFFmpeg("",""){
       false
     }
     else {
-      LOGGER.error("There was an error to start the recording")
+      LOGGER.error("There was an error to get media info")
       false
     }
 

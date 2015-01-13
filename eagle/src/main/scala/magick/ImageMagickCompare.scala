@@ -41,7 +41,7 @@ class ImageMagickCompare {
       false
     }
     else {
-      LOGGER.error("There was an error to start the recording")
+      LOGGER.error("There was an error to do image diff")
       false
     }
 

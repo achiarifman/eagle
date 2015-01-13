@@ -43,7 +43,7 @@ object FFProbeInfo extends BaseFFmpeg("",""){
       None
     }
     else {
-      LOGGER.error("There was an error to start the recording")
+      LOGGER.error("There was an error to FFProbe media info")
       None
     }
 
