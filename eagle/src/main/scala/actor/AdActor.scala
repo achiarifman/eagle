@@ -74,13 +74,13 @@ class AdActor extends AbstractActor{
 
   }
 
-  def getVideoSegmentsCandidates(adJob: EagleRecordEntity) : List[Int] ={
+  /*def getVideoSegmentsCandidates(adJob: EagleRecordEntity) : List[Int] ={
 
     val duration = adJob.getDuration
     val numOfAds = adJob.getNumberOfAds
     val segmentLength : Int = duration / numOfAds
     val segments = List.range(0,duration,segmentLength)
     segments
-  }
+  }*/
 
 }

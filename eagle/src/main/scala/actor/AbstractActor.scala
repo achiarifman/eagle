@@ -20,8 +20,5 @@ abstract class AbstractActor extends Actor with ActorLogging{
     act !(eagleRecordJob, it)
   }
 
-  /*def createOutputFolder(folderName: String) {
-    new File(folderName).mkdir
-  }*/
 
 }

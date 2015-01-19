@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.duration._
 import scala.sys.process._
 import scala.sys.process.ProcessLogger
-
+import scala.io.Source._
 /**
  * Created by Achia.Rifman on 09/01/2015.
  */
@@ -26,10 +26,12 @@ class FFmpegMediaInfo(val sourceFilePath : String) extends BaseFFmpeg("",""){
 
     var duration : Duration = null
     init()
-    val pLogger = ProcessLogger(line => {
+    val filename = "temp_info_" +System.currentTimeMillis() + ".txt"
+    val outputFile = new File(filename)
+    val pLogger = ProcessLogger(outputFile)
+    /*val pLogger = ProcessLogger(line => {
       println(line)
-    },
-      line => {
+
         var mTrack: Matcher = track.matcher(line)
         if (mTrack.matches) {
           println("reading output and found duration -> " + line)
@@ -42,10 +44,20 @@ class FFmpegMediaInfo(val sourceFilePath : String) extends BaseFFmpeg("",""){
           isFailed = true
         }
       }
-    )
+    )*/
     val command = FFMPEG + stringBuilder.toString()
     LOGGER.info("Executing -> " + command)
     command lineStream_!(pLogger)
+    val outPutlines = fromFile(outputFile).getLines()
+    while(outPutlines.hasNext) {
+      val line = outPutlines.next
+      val mTrack: Matcher = track.matcher(line)
+      if (mTrack.matches) {
+        println("reading output and found duration -> " + line)
+        duration = extractDuration(line)
+        isStarted = true
+      }
+    }
     if (isStarted && !isFailed){
       LOGGER.info("Could not find more lines")
       true

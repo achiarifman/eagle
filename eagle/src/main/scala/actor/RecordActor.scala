@@ -12,13 +12,14 @@ import com.eagle.dao.entity.FailedEntity
 import config.{PropsConst, EagleProps}
 import ffmpeg.{FFProbeInfo, FFmpegRecorder}
 import org.bson.types.ObjectId
+import util.FileUtils
 
 import scala.collection.mutable.Stack
 
 /**
  * Created by Achia.Rifman on 12/09/2014.
  */
-class RecordActor extends AbstractActor{
+class RecordActor extends AbstractActor with FileUtils{
 
   val OUTPUT_FOLDER: String = EagleProps.config.getString(PropsConst.RECORD_OUTPUT)
 
@@ -47,9 +48,9 @@ class RecordActor extends AbstractActor{
     }
   }
 
-  def createOutputFolder(folderName: String) {
+/*  def createOutputFolder(folderName: String) {
     new File(folderName).mkdir
-  }
+  }*/
 
   def handleSuccessRecording(id : String, outPutFile : String) {
     log.info("Handling success recording")

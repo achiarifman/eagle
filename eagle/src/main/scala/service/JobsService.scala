@@ -1,6 +1,9 @@
 package service
 
+import actor.ActorsManager
 import actor.consts.ActorsTypes
+import akka.actor.{Props, ActorSystem}
+import com.eagle.dao.JobDao
 import com.eagle.entity.EagleRecordEntity
 import com.eagle.dao.entity.{EagleRecordJob}
 import com.eagle.dao.persistanceContext._
@@ -19,26 +22,16 @@ import scala.collection.mutable
 object JobsService {
 
   val LOGGER = LoggerFactory.getLogger(JobsService.getClass)
-  val test = EagleProps.config.getString("mongo.users.db")
-  def createAndPersistNewJob(eagleJob : EagleRecordEntity) {
-    println(test)
-    //val eagleRecordJob = EagleRecordJob(eagleJob.getUrl,eagleJob.getDuration,eagleJob.getChannelName)
-    val job = persistNewJob(eagleJob,getActorsList(eagleJob))
-    val ent = getIt(job.id)
-    println(ent.channelName)
-    println(ent.recordUrl)
-    ent.waitingActorList.foreach( f => println(f))
-    ActorsService.initialJob(job)
-  }
 
-  def persistNewJob(eagleJob : EagleRecordEntity,actors : List[String]) = {
-    val t = transactional {
-        //val job = new EagleJob(List("first", "second", "third"), new EncodeTest(11, "yes"))
-        val job = new EagleRecordJob(new ObjectId().toString,eagleJob.getUrl,eagleJob.getDuration,
-          eagleJob.getChannelName,actors,eagleJob.getAdsPaths.toList)
-        job
-      }
-    t
+  val system = ActorSystem("eagle")
+  val actorsManager = system.actorOf(Props(new ActorsManager()), ActorsTypes.ACTOR_MANAGER)
+
+  def createAndPersistNewJob(eagleJob : EagleRecordEntity) =  {
+
+    val job = JobDao.persistNewJob(eagleJob,getActorsList(eagleJob))
+    initialJob(job)
+    eagleJob.setId(new ObjectId(job.id))
+    eagleJob
   }
 
   def getActorsList(eagleJob : EagleRecordEntity) = {
@@ -53,13 +46,9 @@ object JobsService {
     actorsList.toList
   }
 
-  def getIt(id : String ) : EagleRecordJob = {
+  def initialJob(eagleRecordEntity: EagleRecordJob) {
 
-    val t = transactional  {
-      byId[EagleRecordJob](id)
-    }
-    t.get
-
+    actorsManager ! eagleRecordEntity
   }
 
 

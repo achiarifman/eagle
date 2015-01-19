@@ -24,14 +24,13 @@ abstract class BaseJob{
   var actorList : List[ActorJob]*/
 }
 @Alias("jobs")
-class EagleRecordJob(val id : String,var recordUrl : String, var recordDuration : Int, var channelName : String,
+class EagleRecordJob(val id : String, var recordUrl : String, var recordDuration : Int, var channelName : String,
                      var waitingActorList: List[String], val adsPath : List[String])
   extends EntityWithCustomID[String] {
   var finished: Boolean = false
   var recordOutPutPath : String = null
   var finishedActorsList = List[String]()
   var uploadFolder : String = null
-  var tuple = ("key","value")
   var segmentDuration : Int = 0
   var width : Int = 0
   var height : Int = 0

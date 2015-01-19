@@ -20,17 +20,11 @@ import scala.sys.process._
  * Created by Achia.Rifman on 13/09/2014.
  */
 
-class FFmpegRecorder {
+class FFmpegRecorder  extends BaseFFmpeg("",""){
 
-  //@Value("${record.output}")  var OUTPUT_FOLDER: String = null
-  val FFMPEG: String = "ffmpeg"
-  var stringBuilder: StringBuilder = new StringBuilder
-  var isStarted: Boolean = false
-  var isFailed: Boolean = false
   val track: Pattern = Pattern.compile("^\\bframe\\b.*")
   val failedHostName: Pattern = Pattern.compile(".*\\bFailed to resolve hostname\\b.*")
   val LOGGER = LoggerFactory.getLogger(classOf[FFmpegRecorder])
-  val inputStream = new SyncVar[OutputStream];
 
   def startRecording() : Boolean =  {
 
@@ -68,15 +62,6 @@ class FFmpegRecorder {
 
   }
 
-  def appendPair(key: String, value: String) {
-    stringBuilder.append(key)
-    stringBuilder.append(value)
-  }
-
-  def appendParam(param: String) {
-    stringBuilder.append(param)
-  }
-
   def init(jobId : String, url : String, duration : Int, outPutFilePath : String) : String ={
 
     val outPutFile = outPutFilePath + ".mp4"
@@ -87,10 +72,6 @@ class FFmpegRecorder {
     outPutFile
   }
 
-  /*def createOutputFolder(folderName: String) {
-    new File(folderName).mkdir
-    outPutFolderPath = Paths.get(folderName)
-  }*/
 
 
 

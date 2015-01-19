@@ -16,10 +16,6 @@ import scala.concurrent.duration._
  */
 class CaptureImagesActor extends AbstractActor with FileUtils{
 
-  //will get it from db
-  //val segmentsList = (0,20,40)
-  val segmentDuration = 20
-
   val splittedFolder = EagleProps.config.getString(PropsConst.IMG_SPLITTED_FOLDER)
 
   def receive = {
@@ -32,7 +28,7 @@ class CaptureImagesActor extends AbstractActor with FileUtils{
 
   def execute(message : PreCaptureImageMessage) = {
     val segmentDuration = splitVideoByTime(message.videoDuration, message.adsList.size)
-    JobDao.saveJobSegmentDuration(message.id,segmentDuration)
+    JobDao.updateJobSegmentDuration(message.id,segmentDuration)
     val segmentsList = List.range(0,message.adsList.size)
     val outputFolder = createOutputFolder(splittedFolder + message.id)
     var result = true

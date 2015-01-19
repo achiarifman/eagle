@@ -62,7 +62,6 @@ class FFmpegImageCapture (val sourceFilePath : String, val startFrom : String, v
     appendPair(FFMPEG_COMMAND.TIME_LIMIT, time)
     appendPair(FFMPEG_COMMAND.FORMAT, FFMPEG_COMMAND.IMAGE2)
     appendPair(FFMPEG_COMMAND.VF, FFMPEG_COMMAND.IMAGE_FPS + CAPTURE_INTERVAL)
-    //val outPutFolderPath = createOutputFolder(outPutFolder)
     appendParam(FFmpegConst.SPACE + outPutFolder + File.separator + IMAGE_OUT)
   }
 }

@@ -2,11 +2,24 @@ package com.eagle.dao
 
 import com.eagle.dao.entity.EagleRecordJob
 import com.eagle.dao.persistanceContext._
+import com.eagle.entity.EagleRecordEntity
+import org.bson.types.ObjectId
+import scala.collection.JavaConverters._
+import scala.collection.JavaConversions._
 /**
  * Created by Achia.Rifman on 27/12/2014.
  */
 object JobDao {
 
+  def persistNewJob(eagleJob : EagleRecordEntity,actors : List[String]) = {
+    val t = transactional {
+
+      val job = new EagleRecordJob(new ObjectId().toString,eagleJob.getUrl,eagleJob.getDuration,
+        eagleJob.getChannelName,actors,eagleJob.getAdsPaths.toList)
+      job
+    }
+    t
+  }
 
   def updateRecordOutputPath(path : String, id : String) = {
 
@@ -38,7 +51,7 @@ object JobDao {
     }
   }
 
-  def saveUploadFolder(id : String, uploadFolder : String) = {
+  def updateUploadFolder(id : String, uploadFolder : String) = {
     transactional{
       val jobOption =  byId[EagleRecordJob](id)
       transactional(nested) {
@@ -49,7 +62,7 @@ object JobDao {
     }
   }
 
-  def saveJobSegmentDuration(id : String, segmentDuration : Int) = {
+  def updateJobSegmentDuration(id : String, segmentDuration : Int) = {
     transactional{
       val jobOption = byId[EagleRecordJob](id)
       transactional(nested) {
@@ -59,7 +72,7 @@ object JobDao {
     }
   }
 
-  def saveJobSegmentDuration(id : String, width : Int, height : Int) = {
+  def updateJobResolution(id : String, width : Int, height : Int) = {
     transactional{
       val jobOption = byId[EagleRecordJob](id)
       transactional(nested) {

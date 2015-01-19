@@ -11,14 +11,14 @@ import com.eagle.dao.entity.{FailedEntity}
 import config.{PropsConst, EagleProps}
 import org.apache.commons.net.ftp.{FTP, FTPClient}
 import org.bson.types.ObjectId
-import util.EagleSpringProperties
+
 
 import scala.collection.mutable.Stack
 
 /**
  * Created by Achia.Rifman on 12/09/2014.
  */
-class UploadActor() extends AbstractActor{
+class UploadActor extends AbstractActor{
 
   val ftpClient: FTPClient = new FTPClient
   val ftpHost = EagleProps.config.getString(PropsConst.FTP_HOST)
@@ -57,7 +57,7 @@ class UploadActor() extends AbstractActor{
 
   def initialFtpClient(){
     ftpClient.connect(ftpHost, 21)
-    val login: Boolean = ftpClient.login(EagleSpringProperties.userName, EagleSpringProperties.password)
+    val login: Boolean = ftpClient.login(ftpUsername, ftpPassword)
     if (!login) {
       throw new IOException
     }

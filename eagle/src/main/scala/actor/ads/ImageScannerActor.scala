@@ -14,7 +14,7 @@ import scala.collection.mutable
  */
 class ImageScannerActor extends AbstractActor with FileUtils{
 
-  val diffFolder = EagleProps.config.getString(PropsConst.IMG_DIFF_FOLDER)
+  //val diffFolder = EagleProps.config.getString(PropsConst.IMG_DIFF_FOLDER)
 
   def receive = {
 
@@ -92,7 +92,7 @@ class ImageScannerActor extends AbstractActor with FileUtils{
     }
   }
 
-  def group[A](list: List[A], size: Int): List[List[A]] =
+/*  def group[A](list: List[A], size: Int): List[List[A]] =
     list.foldLeft( (List[List[A]](),0) ) { (r,c) => r match {
       case (head :: tail, num) =>
         if (num < size)  ( (c :: head) :: tail , num + 1 )
@@ -107,6 +107,6 @@ class ImageScannerActor extends AbstractActor with FileUtils{
 
   def scanImages = {
 
-  }
+  }*/
 
 }

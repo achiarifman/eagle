@@ -1,5 +1,6 @@
 package com.eagle.rest;
 
+import com.eagle.consts.RestPath;
 import com.eagle.entity.EagleRecordEntity;
 import com.eagle.service.TranscodeManagerService;
 import com.sun.jersey.api.core.InjectParam;
@@ -7,24 +8,23 @@ import com.eagle.dao.entity.BaseJobEntity;
 import service.JobsService;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Created by Achia.Rifman on 20/06/2014.
  */
-@Path("transcode")
-@Consumes("application/json")
-@Produces("application/json")
+@Path(RestPath.TRANSCODE)
+@Consumes({MediaType.APPLICATION_JSON})
+@Produces({MediaType.APPLICATION_JSON})
 public class TranscodeRestService extends RestApplication{
 
     @InjectParam
     TranscodeManagerService transcodeManagerService;
 
     @POST
-    @Path("channel")
-    public String recordChannel(EagleRecordEntity eagleRecordEntity){
-        JobsService.createAndPersistNewJob(eagleRecordEntity);
-        return "TEST";
-       //return transcodeManagerService.initialNewRecordJob(eagleRecordEntity);
+    @Path(RestPath.CHANNEL)
+    public EagleRecordEntity recordChannel(EagleRecordEntity eagleRecordEntity){
+        return JobsService.createAndPersistNewJob(eagleRecordEntity);
     }
 
     @GET
