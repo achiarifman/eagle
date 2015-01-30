@@ -54,7 +54,7 @@ class RecordActor extends AbstractActor with FileUtils{
 
   def handleSuccessRecording(id : String, outPutFile : String) {
     log.info("Handling success recording")
-    val mediaInfo = FFProbeInfo.getFileInfo(outPutFile)
+    /*val mediaInfo = FFProbeInfo.getFileInfo(outPutFile)
     if(mediaInfo.isEmpty){
 
     }else{
@@ -67,7 +67,7 @@ class RecordActor extends AbstractActor with FileUtils{
         }
       }
 
-    }
+    }*/
     sender() ! new PostRecordMessage(id,outPutFile)
   }
 

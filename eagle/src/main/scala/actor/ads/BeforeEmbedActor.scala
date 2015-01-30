@@ -69,14 +69,14 @@ class BeforeEmbedActor  extends AbstractActor{
     val sortedAds = adsWithDuration.sortWith(_._1 > _._1)
     val sortedCorners = imagesList.sortWith(_._1.size > _._1.size)
     val zippedList = sortedCorners zip sortedAds
-    val (readyPairs,notMatches) = zippedList.partition(p => p._1._1.size >= p._2._1)
+    val (readyPairs,notMatches) = zippedList.partition(p => p._1._1.size * 2 >= p._2._1)
     val adImageList : List[AdToEmbed] = readyPairs.map(f => {
-      val times = getStartEndFromImageList(f._1._1,segmentDuration)
+      val times = getStartEndFromImageList(f._1._1,segmentDuration, f._2._1)
       AdToEmbed(f._2._2,times._1,times._2,f._1._2,f._1._1.head.cornerWidth,f._1._1.head.cornerHeight)
     })
     if(!notMatches.isEmpty){
       val unMatchedSolved : List[AdToEmbed]= handleUnMatchedAds(notMatches,sortedAds).map(f => {
-        val times = getStartEndFromImageList(f._1._1,segmentDuration)
+        val times = getStartEndFromImageList(f._1._1,segmentDuration, f._2._1)
         AdToEmbed(f._2._2,times._1,times._2,f._1._2,f._1._1.head.cornerWidth,f._1._1.head.cornerHeight)
       })
       adImageList ::: unMatchedSolved
@@ -95,20 +95,24 @@ class BeforeEmbedActor  extends AbstractActor{
     if(adPath.endsWith(".png") || adPath.endsWith(".jpg")) true else false
   }
 
-  def getStartEndFromImageList(images : List[ImageDiff], segmentDuration : Int) = {
+  def getStartEndFromImageList(images : List[ImageDiff], segmentDuration : Int, adDuration : Long) = {
 
     val firstImage = images.head
     val segment = firstImage.id
-    val startTime = segment * segmentDuration + images.head.picOneId
-    val endTime = segment * segmentDuration + images.last.PicTwoId
-    (startTime,endTime)
+    val startTime : Long = segment * segmentDuration + images.head.picOneId
+    val endTime : Long = segment * segmentDuration + images.last.PicTwoId
+    if(endTime - startTime > adDuration){
+      (startTime, startTime + adDuration)
+    }else{
+      (startTime,endTime)
+    }
   }
 
   def handleUnMatchedAds(unMatched :  List[((List[ImageDiff], String), (Long, String))], allAds : List[(Long, String)]) = {
     val imagesList = unMatched.map(f => f._1)
     val matched = imagesList.map(f => {
-      (f,allAds.find(p => p._1 <= f._1.size))
-    }).filter(f => f._2.get != None).map(z => (z._1,z._2.get)) // need to check there is a problem
+      (f,allAds.find(p => p._1 <= f._1.size * 2))
+    }).filter(f => !f._2.isEmpty).map(z => (z._1,z._2.get)) // need to check there is a problem
     matched
   }
 }

@@ -69,7 +69,10 @@ class FFmpegEmbeder(val sourceFilePath : String, val embedVideos : List[AdToEmbe
   def init() {
 
     appendPair(FFMPEG_COMMAND.INPUT, sourceFilePath)
-    embedVideos.foreach(a => appendParam(FFMPEG_COMMAND.INPUT + a.adPath))
+    embedVideos.foreach(a => {
+      appendPair(FFMPEG_COMMAND.ITS_OFFSET, a.startTime.toString)
+      appendParam(FFMPEG_COMMAND.INPUT + a.adPath)
+    })
     var filterValue : String = "\""
     for(i <-1 to embedVideos.size){
       filterValue = filterValue.concat(buildEmbedFilter(embedVideos(i-1),i))

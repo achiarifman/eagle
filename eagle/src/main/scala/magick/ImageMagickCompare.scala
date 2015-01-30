@@ -31,6 +31,7 @@ class ImageMagickCompare {
     val pLogger = getLogger
     val command = COMPARE + stringBuilder.toString()
     isStarted = true
+    LOGGER.info("executing -> " + command)
     command lineStream_!(pLogger)
     if (isStarted && !isFailed){
       LOGGER.info("Could not find more lines")

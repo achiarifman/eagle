@@ -21,14 +21,15 @@ class FFmpegMediaInfo(val sourceFilePath : String) extends BaseFFmpeg("",""){
   val track : Pattern = Pattern.compile("^\\b" + DURATION + "\\b.*")
   val error: Pattern = Pattern.compile(".*\\bError\\b.*")
   val LOGGER = LoggerFactory.getLogger(classOf[FFmpegMediaInfo])
+  var duration : Duration = null
 
   def getMediaInfo() = {
 
-    var duration : Duration = null
+
     init()
     val filename = "temp_info_" +System.currentTimeMillis() + ".txt"
     val outputFile = new File(filename)
-    val pLogger = ProcessLogger(outputFile)
+    val pLogger = ProcessLogger(analyzeLine,analyzeLine)
     /*val pLogger = ProcessLogger(line => {
       println(line)
 
@@ -48,7 +49,7 @@ class FFmpegMediaInfo(val sourceFilePath : String) extends BaseFFmpeg("",""){
     val command = FFMPEG + stringBuilder.toString()
     LOGGER.info("Executing -> " + command)
     command lineStream_!(pLogger)
-    val outPutlines = fromFile(outputFile).getLines()
+    /*val outPutlines = fromFile(outputFile).getLines()
     while(outPutlines.hasNext) {
       val line = outPutlines.next
       val mTrack: Matcher = track.matcher(line)
@@ -57,7 +58,7 @@ class FFmpegMediaInfo(val sourceFilePath : String) extends BaseFFmpeg("",""){
         duration = extractDuration(line)
         isStarted = true
       }
-    }
+    }*/
     if (isStarted && !isFailed){
       LOGGER.info("Could not find more lines")
       true
@@ -74,9 +75,18 @@ class FFmpegMediaInfo(val sourceFilePath : String) extends BaseFFmpeg("",""){
     MediaInfo(sourceFilePath,duration)
   }
 
+  def analyzeLine(line : String) : Unit = {
+    println(line)
+    if(isDurationLine(line)){
+      isStarted = true
+      duration = extractDuration(line)
+    }
+  }
+
+  def isDurationLine(line: String) = if(line.contains(DURATION)) true else false
   def extractDuration(line : String) = {
     // Duration: 00:00:20.00, start: 0.000000, bitrate: 5198 kb/s
-    val rePlaced = line.replace(DURATION + " ", "")
+    val rePlaced = line.replace(DURATION + ": ", "")
     val strDuration = rePlaced.substring(0,rePlaced.indexOf(","))
     val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT"))
