@@ -43,6 +43,7 @@ object JobsService {
       actorsList += ActorsTypes.AD_ACTOR
     }
     actorsList += ActorsTypes.UPLOAD_ACTOR
+    actorsList += ActorsTypes.PUBLISH_ACTOR
     actorsList.toList
   }
 

@@ -15,7 +15,7 @@ object JobDao {
     val t = transactional {
 
       val job = new EagleRecordJob(new ObjectId().toString,eagleJob.getUrl,eagleJob.getDuration,
-        eagleJob.getChannelName,actors,eagleJob.getAdsPaths.toList)
+        eagleJob.getChannelName,actors,eagleJob.getAdsPaths.toList,eagleJob.getCallBackUrl)
       job
     }
     t
@@ -79,6 +79,27 @@ object JobDao {
         val job = jobOption.get
         job.width = width
         job.height = height
+      }
+    }
+  }
+
+  def updateEmbeddedPath(id : String, path : String) = {
+    transactional{
+      val jobOption = byId[EagleRecordJob](id)
+      transactional(nested) {
+        val job = jobOption.get
+        job.finalOutPutPath = path
+      }
+    }
+  }
+
+  def updateJobStatus(id : String, finished : Boolean, callBackResponse : String) = {
+    transactional{
+      val jobOption = byId[EagleRecordJob](id)
+      transactional(nested) {
+        val job = jobOption.get
+        job.finished = finished
+        job.callBackResponse = callBackResponse
       }
     }
   }

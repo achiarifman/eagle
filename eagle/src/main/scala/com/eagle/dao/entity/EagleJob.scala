@@ -25,7 +25,7 @@ abstract class BaseJob{
 }
 @Alias("jobs")
 class EagleRecordJob(val id : String, var recordUrl : String, var recordDuration : Int, var channelName : String,
-                     var waitingActorList: List[String], val adsPath : List[String])
+                     var waitingActorList: List[String], val adsPath : List[String],val callBackUrl :String)
   extends EntityWithCustomID[String] {
   var finished: Boolean = false
   var recordOutPutPath : String = null
@@ -34,6 +34,8 @@ class EagleRecordJob(val id : String, var recordUrl : String, var recordDuration
   var segmentDuration : Int = 0
   var width : Int = 0
   var height : Int = 0
+  var finalOutPutPath : String = null
+  var callBackResponse : String = null
 }
 
 class EagleAdJob(var sourceFilePath : String, var ImageOutPutFolder : String) extends BaseJob{
