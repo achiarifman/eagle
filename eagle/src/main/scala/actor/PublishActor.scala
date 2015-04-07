@@ -21,24 +21,25 @@ class PublishActor extends AbstractActor with FileUtils{
 
   def sendCallBack(message : PrePublishMessage) = {
 
+    val theSender = sender
     val req = url(message.callBackUrl).setContentType("application/json", "UTF-8").addHeader("Accept","application/json; charset=UTF-8")
     val reqWithBody = req << buildBody(message)
     val response = Http(reqWithBody.POST OK as.String)
     response onComplete {
       case Success(content) => {
         println("Successful callback response" + content)
-        sender() ! PostPublishMessage(message.id,true,content)
+        theSender ! PostPublishMessage(message.id,true,content)
       }
       case Failure(ex) => {
         println("An error has occurred on callback: " + ex.getMessage)
-        sender() ! PostPublishMessage(message.id,false,ex.getMessage)
+        theSender ! PostPublishMessage(message.id,false,ex.getMessage)
       }
     }
   }
 
   def buildBody(message : PrePublishMessage) : String = {
-    val mapper = new ObjectMapper()
-    val json = mapper.writeValueAsString(new CallBackEntity(message.id,"finished"))
-    json
+    import spray.json._
+    import actor.message.PublishSerializer._
+    message.toJson.toString()
   }
 }

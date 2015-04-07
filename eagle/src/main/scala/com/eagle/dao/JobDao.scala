@@ -11,11 +11,11 @@ import scala.collection.JavaConversions._
  */
 object JobDao {
 
-  def persistNewJob(eagleJob : EagleRecordEntity,actors : List[String]) = {
+  def persistNewJob(eagleJob : EagleRecordEntity,actors : List[String], ads : List[String]) = {
     val t = transactional {
 
       val job = new EagleRecordJob(new ObjectId().toString,eagleJob.getUrl,eagleJob.getDuration,
-        eagleJob.getChannelName,actors,eagleJob.getAdsPaths.toList,eagleJob.getCallBackUrl)
+        eagleJob.getChannelName,actors,ads,eagleJob.getCallBackUrl,eagleJob.getProgramId)
       job
     }
     t
@@ -39,13 +39,13 @@ object JobDao {
       job.get
 
   }
-  def updateActorsList(id : String, finishedActors : List[String], waitingActors : List[String]) = {
+  def updateActorsList(id : String, finishedActor : String, waitingActors : List[String]) = {
     transactional{
       val jobOption =  byId[EagleRecordJob](id)
       transactional(nested) {
         val job = jobOption.get
           job.waitingActorList  = waitingActors
-          job.finishedActorsList = job.finishedActorsList ::: finishedActors
+          job.finishedActorsList = job.finishedActorsList :+ finishedActor
         job
       }
     }
@@ -95,13 +95,44 @@ object JobDao {
 
   def updateJobStatus(id : String, finished : Boolean, callBackResponse : String) = {
     transactional{
-      val jobOption = byId[EagleRecordJob](id)
-      transactional(nested) {
-        val job = jobOption.get
-        job.finished = finished
-        job.callBackResponse = callBackResponse
-      }
+      val jMap = new MutableEntityMap[EagleRecordJob]()
+      jMap.put(_.finished)(finished)
+      jMap.put(_.callBackResponse)(callBackResponse)
+      jMap.tryUpdate(id)
     }
   }
 
+  def updatePublishUrl(id : String, url : String) = {
+    transactional{
+      val jMap = new MutableEntityMap[EagleRecordJob]()
+      jMap.put(_.publishUrl)(url)
+      jMap.tryUpdate(id)
+    }
+  }
+
+  def updateEmbedAds(id : String, status : Boolean) = {
+    transactional{
+      val jMap = new MutableEntityMap[EagleRecordJob]
+      jMap.put(_.embedAdsSuccess)(status)
+      jMap.tryUpdate(id)
+    }
+  }
+
+  def getNotCleanedJobs = {
+    transactional{
+      val navigator = paginatedQuery{
+        (entity: EagleRecordJob) =>
+          where((entity.finished :== true) :&& (entity.cleaned :== false)) select(entity.id) orderBy(entity.programId)
+      }.navigator(100)
+      navigator.firstPage
+    }
+  }
+
+  def markJobAsCleaned(id : String) = {
+    transactional{
+      val jMap = new MutableEntityMap[EagleRecordJob]
+      jMap.put(_.cleaned)(true)
+      jMap.tryUpdate(id)
+    }
+  }
 }

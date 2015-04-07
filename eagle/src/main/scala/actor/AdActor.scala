@@ -64,14 +64,9 @@ class AdActor extends AbstractActor{
     }
 
     case(postAdEmbederMessage : PostAdEmbederMessage) => {
-      if(postAdEmbederMessage.success){
         val actorParent = context.parent
         actorParent ! postAdEmbederMessage
-      }else{
-        // send fail to ActorManager
-      }
     }
-
   }
 
   /*def getVideoSegmentsCandidates(adJob: EagleRecordEntity) : List[Int] ={

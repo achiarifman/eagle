@@ -1,11 +1,11 @@
 package actor
 
 import java.io.{File, IOException}
-import java.nio.file.{Files, Path}
+import java.nio.file.{Paths, Files, Path}
 
 import actor.message.{PostUploadMessage, PreUploadMessage}
 import akka.actor.{ActorRef}
-import com.eagle.commons.FileUploadVisitor
+import com.eagle.commons.{CopyFileVisitor, FileUploadVisitor}
 import com.eagle.entity.EagleRecordEntity
 import com.eagle.dao.entity.{FailedEntity}
 import config.{PropsConst, EagleProps}
@@ -26,18 +26,23 @@ class UploadActor extends AbstractActor{
   val ftpUsername = EagleProps.config.getString(PropsConst.FTP_USERNAME)
   val ftpPassword = EagleProps.config.getString(PropsConst.FTP_PASSWORD)
 
+  val dropboxFolder = EagleProps.config.getString(PropsConst.DROPBOX_UPLOAD_PATH)
+  val dropboxPublishUrl = EagleProps.config.getString(PropsConst.DROPBOX_PUBLISH_URL)
+
 
   def receive = {
 
     case (preUploadMessage: PreUploadMessage) => {
       val result = startUploadingProcess(preUploadMessage)
       if(!result) handleFailedUploading(preUploadMessage.id)
-      else handleSuccessUploading(preUploadMessage.id)
+      else handleSuccessUploading(preUploadMessage)
     }
   }
 
   def startUploadingProcess(preUploadMessage: PreUploadMessage) : Boolean = {
-    try {
+
+    copyFileToFolder(preUploadMessage)
+    /*try {
       initialFtpClient()
     }
     catch {
@@ -52,6 +57,13 @@ class UploadActor extends AbstractActor{
     Files.walkFileTree(uploadFolder, fileUploadVisitor)
     disconnect
     log.info("Start uploading process")
+    true*/
+  }
+
+  def copyFileToFolder(preUploadMessage: PreUploadMessage) = {
+    val uploadFolder: Path = preUploadMessage.uploadPath
+    val copyFileVisitor : CopyFileVisitor = new CopyFileVisitor(Paths.get(dropboxFolder))
+    Files.walkFileTree(uploadFolder,copyFileVisitor)
     true
   }
 
@@ -79,13 +91,14 @@ class UploadActor extends AbstractActor{
     }
   }
 
-  def handleSuccessUploading(id : String){
+  def handleSuccessUploading(m : PreUploadMessage){
     log.info("Handling success uploading")
-    sender() ! PostUploadMessage(id,true)
+    val publishUrl = dropboxPublishUrl + m.uploadPath.getFileName
+    sender() ! PostUploadMessage(m.id,true,publishUrl)
   }
 
   def handleFailedUploading(id : String) {
     log.error("Handling failed uploading")
-    sender() ! PostUploadMessage(id,false)
+    sender() ! PostUploadMessage(id,false,"")
   }
 }

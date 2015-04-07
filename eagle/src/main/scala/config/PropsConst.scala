@@ -15,4 +15,11 @@ object PropsConst {
   val EMBED_OUTPUT = "embed.output"
   val NEEDED_PERCENTAGES = "percentages"
   val FFMPEG_PATH = "ffmpeg.path"
+  val DROPBOX_UPLOAD_PATH = "dropbox.upload.folder"
+  val DROPBOX_PUBLISH_URL = "dropbox.publish.path"
+  val DROPBOX_REALATIVE_PATH = "dropbox.relative.path"
+  val ALERT_MAIL = "alert.mail"
+  val CLEAN_DELAY = "clean.delay.min"
+  val CLEAN_INTERVAL = "clean.interval.min"
+
 }

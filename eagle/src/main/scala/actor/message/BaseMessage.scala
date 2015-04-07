@@ -8,3 +8,5 @@ import org.bson.types.ObjectId
 class BaseMessage(val id : String) {
 
 }
+
+case class FilesCleanMessage()

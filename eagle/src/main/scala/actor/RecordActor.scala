@@ -37,7 +37,7 @@ class RecordActor extends AbstractActor with FileUtils{
     val ffmpegRecorder = new FFmpegRecorder
     val outPutFolder = OUTPUT_FOLDER + File.separator + message.id
     createOutputFolder(outPutFolder)
-    val outPutFilePath = outPutFolder + File.separator +  message.id.toString + FFmpegConst.UNDERSCORE + message.channelName
+    val outPutFilePath = outPutFolder + File.separator +  message.id.toString
     val filePath = ffmpegRecorder.init(message.id.toString, message.url, message.duration, outPutFilePath)
     val result = ffmpegRecorder.startRecording
     if (!result) {
