@@ -21,6 +21,7 @@ class AdActor extends AbstractActor{
   val imageScannerActor = context.actorOf(Props(new ImageScannerActor), ActorsTypes.IMAGE_SCANNER_ACTOR)
   val beforeEmbedActor = context.actorOf(Props(new BeforeEmbedActor), ActorsTypes.BEFORE_EMBED_ACTOR)
   val adsEmbederActor = context.actorOf(Props(new AdsEmbederActor), ActorsTypes.ADS_EMBEDER_ACTOR)
+  val scaleActor = context.actorOf(Props(new ScaleActor), ActorsTypes.SCALE_ACTOR)
 
   def receive = {
 
@@ -55,11 +56,23 @@ class AdActor extends AbstractActor{
     }
 
     case(postBeforeEmbedMessage : PostBeforeEmbedMessage) => {
+      val job = JobDao.getJobById(postBeforeEmbedMessage.id)
       if(postBeforeEmbedMessage.success){
-        val job = JobDao.getJobById(postBeforeEmbedMessage.id)
         adsEmbederActor ! PreAdEmbederMessage(postBeforeEmbedMessage.id,postBeforeEmbedMessage.matchedAdList, job.recordOutPutPath)
       }else{
-        // send fail to ActorManager
+        //JobDao.initialScaledAdCounter(job.id,job.adsPath.size)
+        job.adsPath.foreach(ad => scaleActor ! PreScaleMessage(job.id,ad,job.height,job.width))
+      }
+    }
+
+    case(message : PostScaleMessage) => {
+      //val job = JobDao.getJobById(message.id)
+      val jobOption = JobDao.increaseScaledAdCounter(message.id)
+      if(jobOption.isDefined){
+        if(jobOption.get.scaledCounter == jobOption.get.adsPath.size){
+            adsEmbederActor ! PreOnStartEmbedMessage(message.id,jobOption.get.recordOutPutPath,jobOption.get.scaledAdsPaths)
+        }else{
+        }
       }
     }
 

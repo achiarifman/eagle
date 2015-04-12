@@ -36,7 +36,7 @@ class ImageDiffActor extends AbstractActor with FileUtils{
 
   def execute(message : PreFindImageDiffMessage) = {
 
-    //val diffList = generateDiffImages(message)
+
     val outPutFolder = createOutputFolder(DIFF_IMG_FOLDER + message.id)
     var segmentResultList : mutable.HashMap[Int,List[ImageDiff]] = mutable.HashMap()
     message.capturedSegmentsFolder.foreach(s => {

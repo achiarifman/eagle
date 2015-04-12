@@ -17,5 +17,7 @@ object FFMPEG_COMMAND {
   val IMAGE_FPS = "fps=fps="
   val START_TIME = " -ss "
   val ITS_OFFSET = " -itsoffset "
+  val FILTER_COMPLEX = " -filter_complex "
+  val CONCAT = "concat=n="
 
 }

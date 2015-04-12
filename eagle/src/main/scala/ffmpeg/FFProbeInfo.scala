@@ -14,7 +14,7 @@ import scala.sys.process._
 /**
  * Created by Achia.Rifman on 10/01/2015.
  */
-object FFProbeInfo extends BaseFFmpeg("",""){
+object FFProbeInfo extends BaseFFmpeg{
 
   val FFPROBE = "ffprobe"
 

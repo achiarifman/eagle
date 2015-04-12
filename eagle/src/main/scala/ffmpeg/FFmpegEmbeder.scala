@@ -11,7 +11,7 @@ import scala.sys.process._
 /**
  * Created by Achia.Rifman on 10/01/2015.
  */
-class FFmpegEmbeder(val sourceFilePath : String, val embedVideos : List[AdToEmbed], outPutPath : String) extends BaseFFmpeg("",""){
+class FFmpegEmbeder(val sourceFilePath : String, val embedVideos : List[AdToEmbed], outPutPath : String) extends BaseFFmpeg{
 
 
   val track : Pattern = Pattern.compile("^\\bframe\\b.*")

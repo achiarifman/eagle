@@ -3,11 +3,11 @@ package actor.ads
 import java.io.File
 
 import actor.AbstractActor
-import actor.message.{PostAdEmbederMessage, PreAdEmbederMessage}
+import actor.message.{PreOnStartEmbedMessage, PostAdEmbederMessage, PreAdEmbederMessage}
 import com.eagle.dao.{JobDao, AdDao}
 import com.eagle.dao.entity.AdToEmbed
 import config.{PropsConst, EagleProps}
-import ffmpeg.FFmpegEmbeder
+import ffmpeg.{FFmpegOnStartEmbeder, FFmpegEmbeder}
 import util.FileUtils
 
 /**
@@ -22,11 +22,11 @@ class AdsEmbederActor extends AbstractActor with FileUtils{
 
       execute(message)
     }
+    case(message : PreOnStartEmbedMessage) => executeOnStart(message)
   }
 
   def execute(message : PreAdEmbederMessage) = {
-    val outPutFolder = createOutputFolder(EMBED_OUTPUT + message.id)
-    val outPutFile = outPutFolder + File.separator + message.id + ".mp4"
+    val outPutFile = createOutputFileAndFolder(message.id)
     val ffmpegEmbeder = new FFmpegEmbeder(message.sourceFilePath,message.matchedAdList,outPutFile)
     val result = ffmpegEmbeder.embedInVideo()
     //persist ads embeded to db
@@ -35,6 +35,20 @@ class AdsEmbederActor extends AbstractActor with FileUtils{
     }
       val filePath = if(result) outPutFile else message.sourceFilePath
       sender() ! PostAdEmbederMessage(message.id,result,filePath)
+  }
+
+  def executeOnStart(message : PreOnStartEmbedMessage) = {
+    val outPutFile = createOutputFileAndFolder(message.id)
+    val ffmpeg = new FFmpegOnStartEmbeder(message.sourceFilePath,message.adsPath,outPutFile)
+    val result = ffmpeg.execute
+    val filePath = if(result) outPutFile else message.sourceFilePath
+    sender() ! PostAdEmbederMessage(message.id,result,filePath)
+  }
+
+  def createOutputFileAndFolder(id : String) = {
+    val outPutFolder = createOutputFolder(EMBED_OUTPUT + id)
+    val outPutFile = outPutFolder + File.separator + id + ".mp4"
+    outPutFile
   }
 
   def persistEmbededAds(ads : List[AdToEmbed], jobId : String) = {

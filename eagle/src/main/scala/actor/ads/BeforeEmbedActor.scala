@@ -1,7 +1,7 @@
 package actor.ads
 
 import actor.AbstractActor
-import actor.message.{PostBeforeEmbedMessage, PreBeforeEmbedMessage}
+import actor.message.{PreOnStartEmbedMessage, PostBeforeEmbedMessage, PreBeforeEmbedMessage}
 import akka.actor.Actor.Receive
 import com.eagle.dao.entity.{SegmentCandidates, AdToEmbed, ImageDiff}
 import ffmpeg.FFmpegMediaInfo
@@ -35,7 +35,12 @@ class BeforeEmbedActor  extends AbstractActor{
       }
     })
     val matchedAds = attachAdToCorner(chosenCorners,message.adsPath,message.segmentDuration)
-    sender() ! PostBeforeEmbedMessage(message.id,true,matchedAds )
+    if(matchedAds.isEmpty){
+      sender() ! PostBeforeEmbedMessage(message.id,false,matchedAds )
+    }else{
+      sender() ! PostBeforeEmbedMessage(message.id,true,matchedAds )
+    }
+
   }
 
   def getMaxCandidates(segmentCandidate : SegmentCandidates) : List[(List[ImageDiff],String)] = {
@@ -60,7 +65,7 @@ class BeforeEmbedActor  extends AbstractActor{
   def attachAdToCorner(imagesList : List[(List[ImageDiff],String)], adsPath : List[String] , segmentDuration : Int) = {
     val adsWithDuration : List[(Long,String)] = adsPath.map(a => {
       if(isImageAd(a)){
-        (1.toLong,a) //we put one because it is an image
+        (5.toLong,a) //we put one because it is an image
       }else{
         val adInfo = getAdMediaInfo(a)
         (adInfo.mediaDuration.toSeconds,a)
@@ -112,7 +117,7 @@ class BeforeEmbedActor  extends AbstractActor{
     val imagesList = unMatched.map(f => f._1)
     val matched = imagesList.map(f => {
       (f,allAds.find(p => p._1 <= f._1.size * 2))
-    }).filter(f => !f._2.isEmpty).map(z => (z._1,z._2.get)) // need to check there is a problem
+    }).filter(f => !f._2.isEmpty).map(z => (z._1,z._2.get))
     matched
   }
 }

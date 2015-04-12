@@ -13,6 +13,7 @@ object PropsConst {
   val IMG_SPLITTED_FOLDER = "image.splitted.output"
   val IMG_DIFF_FOLDER = "image.diff.output"
   val EMBED_OUTPUT = "embed.output"
+  val SCALED_OUTPUT = "scaled.output"
   val NEEDED_PERCENTAGES = "percentages"
   val FFMPEG_PATH = "ffmpeg.path"
   val DROPBOX_UPLOAD_PATH = "dropbox.upload.folder"

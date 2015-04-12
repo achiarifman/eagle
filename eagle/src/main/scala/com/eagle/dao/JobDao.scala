@@ -72,7 +72,7 @@ object JobDao {
     }
   }
 
-  def updateJobResolution(id : String, width : Int, height : Int) = {
+  def updateJobResolution(id : String, width : String, height : String) = {
     transactional{
       val jobOption = byId[EagleRecordJob](id)
       transactional(nested) {
@@ -133,6 +133,38 @@ object JobDao {
       val jMap = new MutableEntityMap[EagleRecordJob]
       jMap.put(_.cleaned)(true)
       jMap.tryUpdate(id)
+    }
+  }
+
+  def initialScaledAdCounter(id : String, num : Int) = {
+    transactional{
+      val jMap = new MutableEntityMap[EagleRecordJob]()
+      jMap.put(_.scaledCounter)(num)
+      jMap.tryUpdate(id)
+    }
+  }
+
+  def increaseScaledAdCounter(id : String) = {
+    transactional{
+      val job = byId[EagleRecordJob](id)
+      if(job.isDefined) {
+        val jMap = new MutableEntityMap[EagleRecordJob]()
+        jMap.put(_.scaledCounter)(job.get.scaledCounter + 1)
+        jMap.tryUpdate(id)
+        byId[EagleRecordJob](id)
+      }else job
+    }
+  }
+
+  def addScaledAd(id : String, adPath : String) = {
+    transactional{
+      val job = byId[EagleRecordJob](id)
+      if(job.isDefined) {
+        val jMap = new MutableEntityMap[EagleRecordJob]()
+        jMap.put(_.scaledAdsPaths)(job.get.scaledAdsPaths :+ adPath)
+        jMap.tryUpdate(id)
+        byId[EagleRecordJob](id)
+      }else job
     }
   }
 }

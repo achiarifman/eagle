@@ -16,8 +16,9 @@ class CleanActor extends AbstractActor{
   val EMBED_FOLDER = EagleProps.config.getString(PropsConst.EMBED_OUTPUT)
   val SPLITTED_FOLDER = EagleProps.config.getString(PropsConst.IMG_SPLITTED_FOLDER)
   val DIFF_FOLDER = EagleProps.config.getString(PropsConst.IMG_DIFF_FOLDER)
+  val SCALED_OUTPUT : String = EagleProps.config.getString(PropsConst.SCALED_OUTPUT)
 
-  val foldersList = List(OUTPUT_FOLDER,EMBED_FOLDER,SPLITTED_FOLDER,DIFF_FOLDER)
+  val foldersList = List(OUTPUT_FOLDER,EMBED_FOLDER,SPLITTED_FOLDER,DIFF_FOLDER,SCALED_OUTPUT)
 
   override def receive: Receive = {
     case message : FilesCleanMessage => cleanFiles

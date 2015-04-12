@@ -20,11 +20,13 @@ import scala.sys.process._
  * Created by Achia.Rifman on 13/09/2014.
  */
 
-class FFmpegRecorder  extends BaseFFmpeg("",""){
+class FFmpegRecorder  extends BaseFFmpeg{
 
   val track: Pattern = Pattern.compile("^\\bframe\\b.*")
   val failedHostName: Pattern = Pattern.compile(".*\\bFailed to resolve hostname\\b.*")
   val LOGGER = LoggerFactory.getLogger(classOf[FFmpegRecorder])
+  var retryCounter = 0
+  val MAX_RETRY = 3
 
   def startRecording() : Boolean =  {
 
@@ -40,7 +42,13 @@ class FFmpegRecorder  extends BaseFFmpeg("",""){
         mTrack = failedHostName.matcher(line)
         if (mTrack.matches) {
           println("****Could not reach the url*****" + line)
-          isFailed = true
+          if(retryCounter == MAX_RETRY){
+            isFailed = true
+          }else {
+            retryCounter += 1
+            startRecording()
+          }
+
         }
       }
     )

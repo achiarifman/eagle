@@ -33,13 +33,15 @@ class EagleRecordJob(val id : String, var recordUrl : String, var recordDuration
   var finishedActorsList = List[String]()
   var uploadFolder : String = null
   var segmentDuration : Int = 0
-  var width : Int = 0
-  var height : Int = 0
+  var width : String = "0"
+  var height : String = "0"
   var finalOutPutPath : String = null
   var callBackResponse : String = null
   var publishUrl : String = null
   var embedAdsSuccess : Boolean = _
   var cleaned : Boolean = false
+  var scaledAdsPaths = List[String]()
+  var scaledCounter : Int = 0
 }
 
 class EagleAdJob(var sourceFilePath : String, var ImageOutPutFolder : String) extends BaseJob{

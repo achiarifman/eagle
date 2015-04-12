@@ -13,7 +13,7 @@ import scala.reflect.io.Path
  * Created by Achia.Rifman on 22/11/2014.
  */
 class FFmpegImageCapture (val sourceFilePath : String, val startFrom : String, val time : String,
-                          outPutFolder : String, outPutFolderName : String) extends BaseFFmpeg(outPutFolder,outPutFolderName) {
+                          outPutFolder : String, outPutFolderName : String) extends BaseFFmpeg {
 
   val CAPTURE_INTERVAL = "1"
   val IMAGE_OUT = "%d.png"

@@ -14,6 +14,7 @@ object ActorsTypes {
   val IMAGE_SCANNER_ACTOR = "imageScannerActor"
   val BEFORE_EMBED_ACTOR = "beforeEmbedActor1"
   val ADS_EMBEDER_ACTOR = "adsEmbederActor"
+  val SCALE_ACTOR = "scaleActor"
   val ACTOR_MANAGER = "actorManager"
 
 }

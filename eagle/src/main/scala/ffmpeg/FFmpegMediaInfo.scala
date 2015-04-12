@@ -15,7 +15,7 @@ import scala.io.Source._
 /**
  * Created by Achia.Rifman on 09/01/2015.
  */
-class FFmpegMediaInfo(val sourceFilePath : String) extends BaseFFmpeg("",""){
+class FFmpegMediaInfo(val sourceFilePath : String) extends BaseFFmpeg{
 
   val DURATION = "Duration"
   val track : Pattern = Pattern.compile("^\\b" + DURATION + "\\b.*")

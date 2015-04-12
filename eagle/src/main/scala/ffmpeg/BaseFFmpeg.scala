@@ -10,7 +10,7 @@ import scala.concurrent.SyncVar
 /**
  * Created by Achia.Rifman on 22/11/2014.
  */
-class BaseFFmpeg(val outPutFolder : String, val outPutFolderName : String) {
+class BaseFFmpeg{
 
   val FFMPEG =  EagleProps.config.getString(PropsConst.FFMPEG_PATH)
   val inputStream = new SyncVar[OutputStream]

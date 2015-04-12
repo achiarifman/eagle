@@ -1,6 +1,7 @@
 package actor.ads
 
 import java.io.File
+import javax.imageio.ImageIO
 
 import actor.AbstractActor
 import actor.message.{PostCaptureImageMessage, PreCaptureImageMessage}
@@ -39,7 +40,21 @@ class CaptureImagesActor extends AbstractActor with FileUtils{
       result = result && captureImages(message.videoPathToCapture,startTime,time, folder)
       folder
     })
+    val imageOption = capturedImages.headOption
+    if(imageOption.isDefined) saveResolutions(message.id,imageOption.get)
     sender() ! PostCaptureImageMessage(message.id,result,capturedImages,segmentsList,segmentDuration)
+  }
+
+  def saveResolutions(id : String, folderPath : String ) = {
+    val filesList = getListOfFiles(folderPath).toList
+    val imageOption = filesList.headOption
+    if(imageOption.isDefined){
+      val image = ImageIO.read(imageOption.get)
+      val width = image.getWidth
+      val height = image.getHeight
+      JobDao.updateJobResolution(id,width.toString,height.toString)
+    }
+
   }
   
   def getCaptureImageDetails() = {
