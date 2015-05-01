@@ -6,7 +6,7 @@ import com.eagle.dao.JobDao
 import config.{PropsConst, EagleProps}
 import org.apache.commons.io.FileUtils
 import scala.util.matching.Regex
-
+import com.eagle.dao.persistanceContext._
 /**
  * Created by Achia.Rifman on 04/04/2015.
  */
@@ -25,8 +25,13 @@ class CleanActor extends AbstractActor{
   }
 
   def cleanFiles = {
-    val cleanJobList = JobDao.getNotCleanedJobs
-    foldersList.foreach(folder=> deleteFileFromFolder(folder,jobIdsToRegex(cleanJobList)))
+    transactional{
+      val navigator = JobDao.getNotCleanedJobs
+      while(navigator.hasNext){
+        val cleanJobList = navigator.next
+        foldersList.foreach(folder=> deleteFileFromFolder(folder,jobIdsToRegex(cleanJobList)))
+      }
+    }
   }
 
   def deleteFileFromFolder(folderName :String, jobsRegex : List[Regex]) = {

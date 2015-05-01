@@ -124,7 +124,7 @@ object JobDao {
         (entity: EagleRecordJob) =>
           where((entity.finished :== true) :&& (entity.cleaned :== false)) select(entity.id) orderBy(entity.programId)
       }.navigator(100)
-      navigator.firstPage
+      navigator
     }
   }
 
@@ -165,6 +165,30 @@ object JobDao {
         jMap.tryUpdate(id)
         byId[EagleRecordJob](id)
       }else job
+    }
+  }
+
+  def updateNeededPercentage(id : String, num : Int) = {
+    transactional{
+      val jMap = new MutableEntityMap[EagleRecordJob]
+      jMap.put(_.neededPercentage)(num)
+      jMap.tryUpdate(id)
+    }
+  }
+
+  def saveSegmentsList(id : String, segments : List[Int]) = {
+    transactional{
+      val jMap = new MutableEntityMap[EagleRecordJob]
+      jMap.put(_.segmentList)(segments)
+      jMap.tryUpdate(id)
+    }
+  }
+
+  def saveCapturedSegFolders(id : String, segmentsFolders : List[String]) = {
+    transactional{
+      val jMap = new MutableEntityMap[EagleRecordJob]
+      jMap.put(_.capturedSegFolders)(segmentsFolders)
+      jMap.tryUpdate(id)
     }
   }
 }

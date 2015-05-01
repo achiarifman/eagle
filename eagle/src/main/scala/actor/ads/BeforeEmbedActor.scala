@@ -13,7 +13,7 @@ import scala.collection.mutable
  */
 class BeforeEmbedActor  extends AbstractActor{
 
-
+  val IMAGE_DURATION = 5.toLong
 
   def receive = {
      case message : PreBeforeEmbedMessage => {
@@ -65,7 +65,7 @@ class BeforeEmbedActor  extends AbstractActor{
   def attachAdToCorner(imagesList : List[(List[ImageDiff],String)], adsPath : List[String] , segmentDuration : Int) = {
     val adsWithDuration : List[(Long,String)] = adsPath.map(a => {
       if(isImageAd(a)){
-        (5.toLong,a) //we put one because it is an image
+        (IMAGE_DURATION,a)
       }else{
         val adInfo = getAdMediaInfo(a)
         (adInfo.mediaDuration.toSeconds,a)

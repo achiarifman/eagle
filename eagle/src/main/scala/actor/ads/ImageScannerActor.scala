@@ -14,7 +14,7 @@ import scala.collection.mutable
  */
 class ImageScannerActor extends AbstractActor with FileUtils{
 
-  //val diffFolder = EagleProps.config.getString(PropsConst.IMG_DIFF_FOLDER)
+
 
   def receive = {
 
@@ -52,25 +52,11 @@ class ImageScannerActor extends AbstractActor with FileUtils{
 
   def analyzeCorner(imageDiffList : List[ImageDiff]) = {
 
-    //var finish = false
-    //val fullImageList = mutable.MutableList[List[ImageDiff]]()
     if(!imageDiffList.isEmpty){
       analyzeFirstInCorner(imageDiffList.head,imageDiffList.drop(0))
     }else{
       List[List[ImageDiff]]()
     }
-
-
-    /*fullImageList += imageCandidates.toList
-    while(!finish){
-      if(!nextImageCandidates.isEmpty && nextImageCandidates.size > 1){
-        (imageCandidates,nextImageCandidates) = analyzeFirstInCorner(nextImageCandidates.head,nextImageCandidates.drop(0))
-        fullImageList += imageCandidates.toList
-      }else{
-        finish = true
-      }
-    }*/
-
   }
 
   def analyzeFirstInCorner(first : ImageDiff,imageDiffList : List[ImageDiff]) : List[List[ImageDiff]]  = {
@@ -91,22 +77,5 @@ class ImageScannerActor extends AbstractActor with FileUtils{
       List[List[ImageDiff]](imageCandidatesWithFirst) ::: analyzeFirstInCorner(nextImageCandidates.head,nextImageCandidates.tail)
     }
   }
-
-/*  def group[A](list: List[A], size: Int): List[List[A]] =
-    list.foldLeft( (List[List[A]](),0) ) { (r,c) => r match {
-      case (head :: tail, num) =>
-        if (num < size)  ( (c :: head) :: tail , num + 1 )
-        else             ( List(c) :: head :: tail , 1 )
-      case (Nil, num) => (List(List(c)), 1)
-    }
-    }._1.foldLeft(List[List[A]]())( (r,c) => c.reverse :: r)
-
-  def getScanDetails = {
-
-  }
-
-  def scanImages = {
-
-  }*/
 
 }

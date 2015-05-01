@@ -73,11 +73,16 @@ class ActorsManager extends Actor with ActorLogging{
       println("send to record")
     }
     case (postRecordMessage : PostRecordMessage) => {
-      JobDao.updateRecordOutputPath(postRecordMessage.outPutFile, postRecordMessage.id.toString)
-      updateJobActorList(postRecordMessage.id.toString)
-      val persistedJobEntity = JobDao.getJobById(postRecordMessage.id.toString)
-      //need to check if there are others actors
-      mapAndSendMessage(persistedJobEntity)
+      if(postRecordMessage.success){
+        JobDao.updateRecordOutputPath(postRecordMessage.outPutFile, postRecordMessage.id.toString)
+        updateJobActorList(postRecordMessage.id.toString)
+        val persistedJobEntity = JobDao.getJobById(postRecordMessage.id.toString)
+        //need to check if there are others actors
+        mapAndSendMessage(persistedJobEntity)
+
+      }else {
+        log.warning("JOB FAILED!!!!")
+      }
     }
     case (postUploadMessage : PostUploadMessage) => {
       if(postUploadMessage.success){

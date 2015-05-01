@@ -17,6 +17,7 @@ class BaseFFmpeg{
   val stringBuilder: StringBuilder = new StringBuilder
   var isStarted = false
   var isFailed = false
+  val minInSeconds = 60
 
 
   def appendPair(key: String, value: String) = {

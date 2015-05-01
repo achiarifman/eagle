@@ -42,6 +42,9 @@ class EagleRecordJob(val id : String, var recordUrl : String, var recordDuration
   var cleaned : Boolean = false
   var scaledAdsPaths = List[String]()
   var scaledCounter : Int = 0
+  var neededPercentage : Int = 100
+  var segmentList = List[Int]()
+  var capturedSegFolders = List[String]()
 }
 
 class EagleAdJob(var sourceFilePath : String, var ImageOutPutFolder : String) extends BaseJob{

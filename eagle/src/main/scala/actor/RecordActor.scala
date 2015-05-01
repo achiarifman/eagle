@@ -27,11 +27,11 @@ class RecordActor extends AbstractActor with FileUtils{
   def receive = {
 
     case (message: PreRecordMessage) => {
-      startFFmpegRecordProcess(message)
+      startFFmpegRecordProcess(message,sender())
     }
   }
 
-  def startFFmpegRecordProcess(message: PreRecordMessage) = {
+  def startFFmpegRecordProcess(message: PreRecordMessage,theSender : ActorRef) = {
 
     log.info("Start recording process")
     val ffmpegRecorder = new FFmpegRecorder
@@ -40,11 +40,13 @@ class RecordActor extends AbstractActor with FileUtils{
     val outPutFilePath = outPutFolder + File.separator +  message.id.toString
     val filePath = ffmpegRecorder.init(message.id.toString, message.url, message.duration, outPutFilePath)
     val result = ffmpegRecorder.startRecording
-    if (!result) {
-      handleFailedRecording(message.id)
+    if (result) {
+      log.info("Handling success recording")
+      theSender ! new PostRecordMessage(message.id,filePath,true)
     }
     else {
-      handleSuccessRecording(message.id,filePath)
+      log.error("Handling failed recording")
+      theSender ! new PostRecordMessage(message.id,"record failed",false)
     }
   }
 
@@ -52,29 +54,15 @@ class RecordActor extends AbstractActor with FileUtils{
     new File(folderName).mkdir
   }*/
 
-  def handleSuccessRecording(id : String, outPutFile : String) {
+/*  def handleSuccessRecording(id : String, outPutFile : String) {
     log.info("Handling success recording")
-    /*val mediaInfo = FFProbeInfo.getFileInfo(outPutFile)
-    if(mediaInfo.isEmpty){
-
-    }else{
-      val info = mediaInfo.get
-      if(!info.getStreams.isEmpty){
-        val width = info.getStreams.get(0).getWidth
-        val height = info.getStreams.get(0).getWidth
-        if(height != null && width != null){
-          JobDao
-        }
-      }
-
-    }*/
-    sender() ! new PostRecordMessage(id,outPutFile)
+    sender() ! new PostRecordMessage(id,outPutFile,true)
   }
 
   def handleFailedRecording(id : String) {
     log.error("Handling failed recording")
-    sender() ! new RecordFailedMessage(id,"record failed")
-  }
+    sender() ! new PostRecordMessage(id,"record failed",false)
+  }*/
 
 
 

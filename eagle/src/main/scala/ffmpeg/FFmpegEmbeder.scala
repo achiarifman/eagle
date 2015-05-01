@@ -22,7 +22,7 @@ class FFmpegEmbeder(val sourceFilePath : String, val embedVideos : List[AdToEmbe
   val BOTTOM_RIGHT = "overlay=main_w-overlay_w-10:main_h-overlay_h-10"
   val TOP_LEFT = "overlay=10:10"
   val BOTTOM_LEFT = "overlay=10:main_h-overlay_h-10"
-  val SCALE = "scale=iw/5:ih/5 " //need to do some logic here to resize it right
+  val SCALE = "scale=iw/10:ih/10 "
   val FILTER_COMPLEX = " -filter_complex "
   val BETWEEN = ":enable='between(t,%s,%s)'"
   val TMP = "tmp"

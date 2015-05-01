@@ -22,6 +22,9 @@ class AdActor extends AbstractActor{
   val beforeEmbedActor = context.actorOf(Props(new BeforeEmbedActor), ActorsTypes.BEFORE_EMBED_ACTOR)
   val adsEmbederActor = context.actorOf(Props(new AdsEmbederActor), ActorsTypes.ADS_EMBEDER_ACTOR)
   val scaleActor = context.actorOf(Props(new ScaleActor), ActorsTypes.SCALE_ACTOR)
+  val MAX_NEEDED_PERCENTAGE = 90
+  val PERCENTAGE_REDUCE = 10
+  val MIN_NEEDED_PERCENTAGE = 10
 
   def receive = {
 
@@ -31,7 +34,10 @@ class AdActor extends AbstractActor{
 
     case (postCaptureImageMessage :PostCaptureImageMessage) => {
       if(postCaptureImageMessage.success){
-        imageDiffActor ! PreFindImageDiffMessage(postCaptureImageMessage.id,postCaptureImageMessage.segmentList,postCaptureImageMessage.capturedSegFolders)
+        JobDao.updateNeededPercentage(postCaptureImageMessage.id,MAX_NEEDED_PERCENTAGE)
+        JobDao.saveCapturedSegFolders(postCaptureImageMessage.id,postCaptureImageMessage.capturedSegFolders)
+        JobDao.saveSegmentsList(postCaptureImageMessage.id,postCaptureImageMessage.segmentList)
+        imageDiffActor ! PreFindImageDiffMessage(postCaptureImageMessage.id,postCaptureImageMessage.segmentList,postCaptureImageMessage.capturedSegFolders,MAX_NEEDED_PERCENTAGE)
       }else{
         // send fail to ActorManager
       }
@@ -60,8 +66,14 @@ class AdActor extends AbstractActor{
       if(postBeforeEmbedMessage.success){
         adsEmbederActor ! PreAdEmbederMessage(postBeforeEmbedMessage.id,postBeforeEmbedMessage.matchedAdList, job.recordOutPutPath)
       }else{
-        //JobDao.initialScaledAdCounter(job.id,job.adsPath.size)
-        job.adsPath.foreach(ad => scaleActor ! PreScaleMessage(job.id,ad,job.height,job.width))
+        if(job.neededPercentage > MIN_NEEDED_PERCENTAGE){
+          val neededPercentage = job.neededPercentage - PERCENTAGE_REDUCE
+          log.info("Could not find spots for ads, trying with lower percentages -> " + neededPercentage)
+          JobDao.updateNeededPercentage(job.id,neededPercentage)
+          imageDiffActor ! PreFindImageDiffMessage(job.id,job.segmentList,job.capturedSegFolders,neededPercentage)
+        }else{
+          job.adsPath.foreach(ad => scaleActor ! PreScaleMessage(job.id,ad,job.height,job.width))
+        }
       }
     }
 

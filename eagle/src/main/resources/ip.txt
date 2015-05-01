@@ -19,3 +19,16 @@ http://46.249.213.87/iPhone/broadcast/tracetvsports-tablet.3gp.m3u8
 Channel 20
 http://vevoplaylist-live.hls.adaptive.level3.net/vevo/ch1/06/prog_index.m3u8
 
+http://hlsstr02.svc.iptv.rt.ru/hls/CH_NATGEOWILD/variant.m3u8
+
+http://hlsstr02.svc.iptv.rt.ru/hls/CH_FOX/variant.m3u8
+http://hls.novotelecom.ru/streaming/fashion/tvrec/playlist.m3u8
+
+i24:
+http://bcoveliveios-i.akamaihd.net/hls/live/215102/master_english/398/master.m3u8
+
+wild:
+http://fichd-lh.akamaihd.net/i/NATGEOW_LATAM@304509/index_2000_av-b.m3u8?sd=10&rebase=on
+
+HD Movies:
+http://50.7.69.186:1935/edge/_definst_/asn0crzhq351g0w/playlist.m3u8?wowzasessionid=1420171902
